@@ -1,0 +1,65 @@
+{
+  "name": "manga-book-dl",
+  "version": "1.0.0",
+  "description": "漫画下载器",
+  "main": "dist/index.js",
+  "types": "types/index.d.ts",
+  "bin": {
+    "manga-book-dl": "bin/index.js"
+  },
+  "scripts": {
+    "dev": "tsc && (concurrently \"tsc -w\" \"tsc-alias -w\")",
+    "build": "tsc && tsc-alias",
+    "test": "run-s test:clean test:run",
+    "test:run": "vitest run --test-timeout=900000",
+    "test:clean": "rimraf test/.temp",
+    "eslintLog": "eslint . > eslint.log",
+    "clean": "rimraf dist types",
+    "np": "np",
+    "release": "run-s clean build np"
+  },
+  "keywords": [
+    "manga",
+    "nodejs",
+    "download",
+    "manga-book-dl",
+    "cli"
+  ],
+  "author": "gxr404",
+  "license": "ISC",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/gxr404/manga-book-dl.git"
+  },
+  "dependencies": {
+    "cac": "^6.7.14",
+    "cheerio": "^1.0.0-rc.12",
+    "cli-progress": "^3.12.0",
+    "epub-gen-memory": "^1.0.10",
+    "got": "^14.0.0",
+    "log4js": "^6.9.1",
+    "p-limit": "^5.0.0",
+    "rand-user-agent": "^1.0.109"
+  },
+  "devDependencies": {
+    "@types/cli-progress": "^3.11.5",
+    "@types/got": "^9.6.12",
+    "@typescript-eslint/eslint-plugin": "^6.15.0",
+    "@typescript-eslint/parser": "^6.15.0",
+    "concurrently": "^8.2.2",
+    "np": "^9.2.0",
+    "npm-run-all": "^4.1.5",
+    "rimraf": "^5.0.5",
+    "tsc-alias": "^1.8.8",
+    "typescript": "^5.3.3",
+    "vitest": "^1.1.0"
+  },
+  "type": "module",
+  "engines": {
+    "node": ">=16.14.0"
+  },
+  "np": {
+    "tests": true,
+    "2fa": false
+  }
+}
