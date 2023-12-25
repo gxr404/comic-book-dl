@@ -36,21 +36,22 @@ export async function getImgList(url: string): Promise<string[]> {
   return imgList
 }
 
-type TSaveImgCallback = (imgPath: string, isSuccess: boolean) => void
+type TSaveImgCallback = (imgPath: string, imgFileName: string, isSuccess: boolean) => void
 export async function saveImgList(path: string, imgList: string[], saveImgCallback?: TSaveImgCallback) {
   const limit = pLimit(10)
   const promiseList = imgList.map(imgUrl => limit(async () => {
     let isSuccess = true
     let imgPath = ''
+    let imgFileName = ''
     try {
-      imgPath = await saveImg(path, imgUrl)
-      imgPath = `${path}/${imgPath}`
+      imgFileName = await saveImg(path, imgUrl)
+      imgPath = `${path}/${imgFileName}`
     } catch(err) {
       // console.error(`save img Error: ${imgUrl}`)
       // console.error(err)
       isSuccess = false
     }
-    if (typeof saveImgCallback === 'function') saveImgCallback(imgPath, isSuccess)
+    if (typeof saveImgCallback === 'function') saveImgCallback(imgPath, imgFileName, isSuccess)
   }))
   await Promise.all(promiseList)
 }
@@ -192,11 +193,11 @@ export async function main(config: Config) {
       await saveImgList(
         chaptersItemPath,
         imageList,
-        (imgPath: string, isSuccess: boolean) => {
+        (imgPath: string, imgFileName: string, isSuccess: boolean) => {
           if (!isSuccess) {
             isAllSuccess = false
           } else {
-            imageListPath.push(imgPath)
+            imageListPath.push(`chapters/${item.name}/${imgFileName}`)
           }
           curBar.increment()
         }
