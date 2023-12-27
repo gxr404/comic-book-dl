@@ -3,7 +3,7 @@ import { cac } from 'cac'
 import { main } from './index'
 import logger from './log'
 
-const cli = cac('comic-dl')
+const cli = cac('comic-book-dl')
 
 export interface IOptions {
   bookPath: string;
@@ -19,7 +19,7 @@ const { version } = JSON.parse(
 cli
   .command('<url>', '包子漫画-漫画目录页url')
   .option('-d, --dist <dir>', '下载的目录 eg: -d comic-dist', {
-    default: 'comic-dist',
+    default: 'comic-book-dist',
   })
   .action(async (url, options: IOptions) => {
     try {

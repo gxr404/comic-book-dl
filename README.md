@@ -1,1 +1,1 @@
-# comic-dl
+# comic-book-dl

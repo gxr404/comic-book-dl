@@ -1,11 +1,11 @@
 {
-  "name": "comic-dl",
+  "name": "comic-book-dl",
   "version": "0.0.0",
   "description": "漫画下载器",
   "main": "dist/index.js",
   "types": "types/index.d.ts",
   "bin": {
-    "comic-dl": "bin/index.js"
+    "comic-book-dl": "bin/index.js"
   },
   "scripts": {
     "dev": "tsc && (concurrently \"tsc -w\" \"tsc-alias -w\")",
@@ -25,13 +25,15 @@
     "nodejs",
     "download",
     "comic-dl",
+    "comic-book-dl",
+    "comic-downloader",
     "cli"
   ],
   "author": "gxr404",
   "license": "ISC",
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/gxr404/comic-dl.git"
+    "url": "git+https://github.com/gxr404/comic-book-dl.git"
   },
   "dependencies": {
     "cac": "^6.7.14",
