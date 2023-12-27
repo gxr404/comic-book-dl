@@ -6,7 +6,7 @@ import logger from './log'
 const cli = cac('comic-book-dl')
 
 export interface IOptions {
-  bookPath: string;
+  distPath: string;
 }
 
 // 不能直接使用 import {version} from '../package.json'
@@ -15,17 +15,16 @@ const { version } = JSON.parse(
   readFileSync(new URL('../package.json', import.meta.url)).toString(),
 )
 
-
 cli
   .command('<url>', '包子漫画-漫画目录页url')
-  .option('-d, --dist <dir>', '下载的目录 eg: -d comic-book-dist', {
+  .option('-d, --distPath <dir>', '下载的目录 eg: -d comic-book-dist', {
     default: 'comic-book-dist',
   })
   .action(async (url, options: IOptions) => {
     try {
       await main({
         targetUrl: url,
-        bookPath: options.bookPath
+        bookPath: options.distPath
       })
     } catch (err) {
       console.log(err)
