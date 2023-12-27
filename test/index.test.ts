@@ -1,6 +1,7 @@
 import { expect, test, describe } from 'vitest'
 import { existsSync, readFileSync } from 'fs'
 import { existsMkdir, fixPathName, getImageName, getImgList, parseBookInfo, saveImg, saveImgList, writeBookInfoFile } from '../src'
+import type { BookInfo } from '../src'
 
 describe('test exist mkdir', () => {
   const randNumber = Math.floor(Math.random()*1000000)
@@ -14,23 +15,56 @@ describe('test exist mkdir', () => {
 
 })
 
+describe('test saveImgList', () => {
+  test('test download img success', async () => {
+    const imgList = [
+      'https://s1.baozicdn.com/scomic/sishenjingjie-jiubaodairen/0/0-ai3o/1.jpg',
+      'https://s1.baozicdn.com/scomic/sishenjingjie-jiubaodairen/0/0-ai3o/2.jpg',
+      'https://s1.baozicdn.com/scomic/sishenjingjie-jiubaodairen/0/0-ai3o/3.jpg',
+    ]
+    const testDistDir = `${__dirname}/.temp/saveImgList/1`
+    existsMkdir(testDistDir)
+    await saveImgList(testDistDir, imgList)
+    imgList.forEach(url => {
+      expect(existsSync(`${testDistDir}/${getImageName(url)}`)).toBe(true)
+    })
+  })
+  test('has fail image', async () => {
+    const imgList = [
+      'https://s1.baozicdn.com/scomic/sishenjingjie-jiubaodairen/0/0-ai3o/1.jpg',
+      "https://s1.baozicdn.com/scomic/1111"
+    ]
+    const testDistDir = `${__dirname}/.temp/saveImgList/2`
+    existsMkdir(testDistDir)
+    let hasFail = false
+    let failUrl: string[] = []
+    await saveImgList(testDistDir, imgList, function(imgUrl, isSuccess) {
+      if (!isSuccess) {
+        hasFail = true
+        failUrl.push(imgUrl)
+      }
+    })
+    expect.soft(hasFail).toBeTruthy()
+    expect.soft(failUrl).toHaveLength(1)
+    expect.soft(failUrl[0]).toBe(imgList[1])
+  })
 
-test('saveImgList', async () => {
-  const imgList = [
-    'https://s1.baozicdn.com/scomic/sishenjingjie-jiubaodairen/0/0-ai3o/1.jpg',
-    'https://s1.baozicdn.com/scomic/sishenjingjie-jiubaodairen/0/0-ai3o/2.jpg',
-    'https://s1.baozicdn.com/scomic/sishenjingjie-jiubaodairen/0/0-ai3o/3.jpg',
-    'https://s1.baozicdn.com/scomic/sishenjingjie-jiubaodairen/0/0-ai3o/4.jpg',
-    'https://s1.baozicdn.com/scomic/sishenjingjie-jiubaodairen/0/0-ai3o/5.jpg',
-    'https://s1.baozicdn.com/scomic/sishenjingjie-jiubaodairen/0/0-ai3o/6.jpg'
-  ]
-  const testDistDir = `${__dirname}/.temp/saveImgList`
-  existsMkdir(testDistDir)
-  await saveImgList(testDistDir, imgList)
-  imgList.forEach(url => {
-    expect(existsSync(`${testDistDir}/${getImageName(url)}`)).toBe(true)
+  test('return image path list', async() => {
+    const imgList = [
+      'https://s1.baozicdn.com/scomic/sishenjingjie-jiubaodairen/0/0-ai3o/1.jpg',
+      'https://s1.baozicdn.com/scomic/sishenjingjie-jiubaodairen/0/0-ai3o/2.jpg',
+      'https://s1.baozicdn.com/scomic/sishenjingjie-jiubaodairen/0/0-ai3o/3.jpg',
+    ]
+    const testDistDir = `${__dirname}/.temp/saveImgList/3`
+    existsMkdir(testDistDir)
+    const imgPathList = await saveImgList(testDistDir, imgList)
+    expect.soft(imgPathList).toHaveLength(3)
+    expect.soft(imgPathList[0]).toBe('1.jpg')
+    expect.soft(imgPathList[1]).toBe('2.jpg')
+    expect.soft(imgPathList[2]).toBe('3.jpg')
   })
 })
+
 
 // test('getImageName', () => {
 //   const url =  'https://s1.baozicdn.com/scomic/sishenjingjie-jiubaodairen/0/0-ai3o/1.jpg'
@@ -51,12 +85,34 @@ test('saveImg', async () => {
 
 describe('parse', () => {
   test('parse Info', async () => {
-    const bookInfo = await parseBookInfo('https://www.fzmanga.com/comic/sishenjingjie-jiubaodairen')
+    const _bookInfo = await parseBookInfo('https://www.fzmanga.com/comic/sishenjingjie-jiubaodairen')
+    expect.soft(_bookInfo).not.toBeFalsy()
+    const bookInfo = _bookInfo as BookInfo
     expect.soft(bookInfo.name).toBeTruthy()
     expect.soft(bookInfo.author).toBeTruthy()
     expect.soft(bookInfo.coverUrl).toBeTruthy()
     expect.soft(bookInfo.desc).toBeTruthy()
     expect.soft(bookInfo.chapters.length).toBeGreaterThan(0)
+  })
+
+  test('parse Info preChapters and nextChapters', async () => {
+    const _bookInfo = await parseBookInfo('https://www.fzmanga.com/comic/sishenjingjie-jiubaodairen')
+    expect.soft(_bookInfo).not.toBeFalsy()
+    const bookInfo = _bookInfo as BookInfo
+
+    expect.soft(bookInfo.chapters[0].preChapter).toBeUndefined()
+    expect.soft(bookInfo.chapters[0].nextChapter).toHaveProperty('name')
+    expect.soft(bookInfo.chapters[0].nextChapter).toHaveProperty('href')
+
+    const lastIndex = bookInfo.chapters.length - 1
+    expect.soft(bookInfo.chapters[lastIndex].nextChapter).toBeUndefined()
+    expect.soft(bookInfo.chapters[lastIndex].preChapter).toHaveProperty('name')
+    expect.soft(bookInfo.chapters[lastIndex].preChapter).toHaveProperty('href')
+  })
+
+  test('error url',async () => {
+    const isSuccess = await parseBookInfo('https://www.fzmanga.com/comic/1233')
+    expect.soft(isSuccess).toBeFalsy()
   })
 })
 
@@ -64,19 +120,20 @@ describe('get image list', () => {
   test('normal', async () => {
     const url = 'https://www.fzmanga.com/comic/chapter/sishenjingjie-jiubaodairen/0_0.html'
     const imgList = await getImgList(url)
-    expect(imgList.length).toBe(6)
+    expect.soft(imgList).toHaveLength(6)
+
   })
 
   test('http 302 state', async () => {
     const url = 'https://www.fzmanga.com/user/page_direct?comic_id=sishenjingjie-jiubaodairen&section_slot=0&chapter_slot=0'
     const imgList = await getImgList(url)
-    expect(imgList.length).toBe(6)
+    expect.soft(imgList).toHaveLength(6)
   })
 
   test('paging', async () => {
     const url = 'https://www.fzmanga.com/comic/chapter/congdashukaishidejinhua-feihongzhiyeyuanzhuheiniaoshe/0_0.html'
     const imgList = await getImgList(url)
-    expect(imgList.length).toBe(166)
+    expect.soft(imgList).toHaveLength(166)
   })
 })
 
@@ -95,7 +152,7 @@ describe('fixPathName', () => {
   test('path _', () => {
     expect(fixPathName('a/b/c')).toBe('a_b_c')
   })
-  test('path \s', () => {
+  test('path \\s', () => {
     expect(fixPathName(' a/b/c ')).toBe('a_b_c')
   })
 })

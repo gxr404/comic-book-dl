@@ -41,7 +41,7 @@ export default class ProgressBar {
     }
 
     this.multiBar = new cliProgress.MultiBar({
-      format: ' {bar} | "{file}" | {value}/{total}',
+      format: ' {bar} | {file} | {value}/{total}',
       hideCursor: true,
       barCompleteChar: '\u2588',
       barIncompleteChar: '\u2591',
