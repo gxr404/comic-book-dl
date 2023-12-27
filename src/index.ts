@@ -33,7 +33,7 @@ export async function getImgList(url: string): Promise<string[]> {
     const nextImgList = await getImgList(nextChapterHref)
     imgList = imgList.concat(nextImgList)
   }
-  return imgList
+  return [...new Set(imgList)]
 }
 
 type TSaveImgCallback = (imgUrl: string, isSuccess: boolean) => void
@@ -83,16 +83,19 @@ export async function saveImg(path: string, imgUrl: string, fixFileName?: string
 
 interface ChaptersItem {
   name: string,
+  rawName: string,
   href: string,
   imageList: string[],
   imageListPath: string[]
   preChapter?: {
     name: string,
-    href: string
+    href: string,
+    rawName: string
   },
   nextChapter?: {
     name: string,
-    href: string
+    href: string,
+    rawName: string
   },
 }
 export interface BookInfo {
@@ -141,6 +144,7 @@ export async function parseBookInfo(url: string): Promise<BookInfo | false> {
     const href = target.attr('href')?.trim() ?? ''
     chapters.push({
       name: `${index}_${fixPathName(name)}`,
+      rawName: name,
       href: `${origin}${href}`,
       imageList: [],
       imageListPath: []
@@ -152,12 +156,14 @@ export async function parseBookInfo(url: string): Promise<BookInfo | false> {
     if (index !== 0) {
       newItem.preChapter = {
         name: chapters[index - 1].name,
+        rawName: chapters[index - 1].rawName,
         href: chapters[index - 1].href
       }
     }
     if (index !== chapters.length - 1){
       newItem.nextChapter = {
         name: chapters[index + 1].name,
+        rawName: chapters[index + 1].rawName,
         href: chapters[index + 1].href
       }
     }

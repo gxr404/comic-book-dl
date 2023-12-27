@@ -133,7 +133,15 @@ describe('get image list', () => {
   test('paging', async () => {
     const url = 'https://www.fzmanga.com/comic/chapter/congdashukaishidejinhua-feihongzhiyeyuanzhuheiniaoshe/0_0.html'
     const imgList = await getImgList(url)
-    expect.soft(imgList).toHaveLength(166)
+    // 超过50会分页
+    expect.soft(imgList.length).toBeGreaterThan(50)
+  })
+
+  test('image list unique', async() => {
+    const url = 'https://cn.czmanga.com/comic/chapter/wushenhuiguilu-dcwebtoonbiz_538j9w/0_0.html'
+    const imgList = await getImgList(url)
+    const uniqueList = new Set(imgList)
+    expect.soft(imgList).toHaveLength(uniqueList.size)
   })
 })
 
