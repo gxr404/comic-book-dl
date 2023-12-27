@@ -18,7 +18,7 @@ const { version } = JSON.parse(
 
 cli
   .command('<url>', '包子漫画-漫画目录页url')
-  .option('-d, --dist <dir>', '下载的目录 eg: -d comic-dist', {
+  .option('-d, --dist <dir>', '下载的目录 eg: -d comic-book-dist', {
     default: 'comic-book-dist',
   })
   .action(async (url, options: IOptions) => {
