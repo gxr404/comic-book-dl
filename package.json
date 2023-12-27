@@ -1,6 +1,6 @@
 {
   "name": "manga-book-dl",
-  "version": "1.0.3",
+  "version": "1.0.4",
   "description": "漫画下载器",
   "main": "dist/index.js",
   "types": "types/index.d.ts",
