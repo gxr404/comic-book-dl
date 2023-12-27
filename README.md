@@ -1,1 +1,1 @@
-# manga-book-dl
+# comic-dl

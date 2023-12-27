@@ -19,7 +19,7 @@ const getLogger = () => {
     },
     categories: { default: { appenders: ['cheese'], level: 'trace' } }
   })
-  return log4js.getLogger('manga-book-dl')
+  return log4js.getLogger('comic-dl')
 }
 
 export default getLogger()

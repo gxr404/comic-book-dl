@@ -1,11 +1,11 @@
 {
-  "name": "manga-book-dl",
-  "version": "1.0.4",
+  "name": "comic-dl",
+  "version": "1.0.0",
   "description": "漫画下载器",
   "main": "dist/index.js",
   "types": "types/index.d.ts",
   "bin": {
-    "manga-book-dl": "bin/index.js"
+    "comic-dl": "bin/index.js"
   },
   "scripts": {
     "dev": "tsc && (concurrently \"tsc -w\" \"tsc-alias -w\")",
@@ -21,22 +21,22 @@
   },
   "keywords": [
     "manga",
+    "comic",
     "nodejs",
     "download",
-    "manga-book-dl",
+    "comic-dl",
     "cli"
   ],
   "author": "gxr404",
   "license": "ISC",
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/gxr404/manga-book-dl.git"
+    "url": "git+https://github.com/gxr404/comic-dl.git"
   },
   "dependencies": {
     "cac": "^6.7.14",
     "cheerio": "^1.0.0-rc.12",
     "cli-progress": "3.12.0",
-    "epub-gen-memory": "^1.0.10",
     "got": "^14.0.0",
     "log4js": "^6.9.1",
     "p-limit": "^5.0.0",

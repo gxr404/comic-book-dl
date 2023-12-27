@@ -4,10 +4,14 @@ import fs from "fs"
 import path from "path"
 import { pipeline } from "stream/promises"
 import pLimit from 'p-limit'
-import type { Config } from "./config"
 import ProgressBar from "./ProgressBar"
 import logger from './log'
 import { UA } from "./utils"
+
+export interface Config {
+  bookPath: string,
+  targetUrl: string;
+}
 
 export async function getImgList(url: string): Promise<string[]> {
   const response = await got(url, {
