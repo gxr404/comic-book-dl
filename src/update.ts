@@ -34,7 +34,10 @@ export async function update(config: Config) {
         ...bookChoices
       ]
     })
-    console.log(answer)
+    if (answer.length === 0) {
+      logger.error('× 未选中任何漫画更新')
+      return
+    }
     bookInfoList = bookInfoList.filter(bookInfo => answer.includes(bookInfo.url))
   }
 
@@ -63,19 +66,3 @@ async function updateRun(bookInfo: BookInfo, bookDistPath: string) {
     }
   })
 }
-
-
-// parseErr() {
-//   logger.error('× 请输入正确的url... o(╥﹏╥)o')
-// },
-// start(bookName) {
-//   logger.info(`开始下载 《${bookName}》`)
-// },
-// downloadInterrupted() {
-//   logger.info('根据上次数据继续断点下载')
-// },
-// error: echoErrorMsg,
-// success(bookDistPath) {
-//   logger.info(`√ 已完成: ${bookDistPath}`)
-// }
-// })
