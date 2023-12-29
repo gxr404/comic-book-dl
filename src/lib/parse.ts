@@ -79,6 +79,7 @@ export async function parseBookInfo(url: string): Promise<BookInfo | false> {
   const desc = $('.comics-detail__info .comics-detail__desc').text().trim()
   const author = $('.comics-detail__info .comics-detail__author').text().trim()
   const coverUrl = $('.l-content .pure-g.de-info__box amp-img').attr('src')?.trim() ?? ''
+  // 全部章节
   const chaptersEl = $('#chapter-items a.comics-chapters__item, #chapters_other_list a.comics-chapters__item')
   let chapters: ChaptersItem[] = []
   const {origin} = new URL(url)
@@ -96,6 +97,37 @@ export async function parseBookInfo(url: string): Promise<BookInfo | false> {
       index
     })
   })
+
+  // 没有全部章节 尝试取最新章节(新上架的漫画仅有 最新章节， 没有全部章节)
+  if (chapters.length === 0) {
+    const chaptersEl = $('#layout > div.comics-detail > div:nth-child(3) > div > div:nth-child(4) a.comics-chapters__item')
+    chaptersEl.toArray().forEach((el: any, index: number) => {
+      const target = $(el)
+      const name = target.find('span').text().trim()
+      const href = target.attr('href')?.trim() ?? ''
+      chapters.unshift({
+        name: `${index}_${fixPathName(name)}`,
+        rawName: name,
+        href: `${origin}${href}`,
+        imageList: [],
+        imageListPath: [],
+        index
+      })
+    })
+    // fix index name
+    chapters = chapters.map((item, index) => {
+      return {
+        ...item,
+        name: `${index}_${fixPathName(item.rawName)}`,
+        index,
+      }
+    })
+  }
+
+  if (!name || chapters.length === 0) {
+    return false
+  }
+
   // 生成上一话/下一话信息
   chapters = chapters.map((item, index) => {
     const newItem = {...item}
@@ -117,10 +149,6 @@ export async function parseBookInfo(url: string): Promise<BookInfo | false> {
     }
     return newItem
   })
-
-  if (!name || chapters.length === 0) {
-    return false
-  }
 
   return {
     name,
