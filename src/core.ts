@@ -79,7 +79,7 @@ export async function run(config: Config, hooks: RunHooks) {
       })
     })
     // ! 漫画更新 url一致 但对应的内容由于更新变化了 重新更新符合的progressInfo
-    progressBar.progressInfo = updateProgressInfo
+    progressBar.resetProgressInfo(updateProgressInfo)
   }
 
   const LIMIT_MAX = 10

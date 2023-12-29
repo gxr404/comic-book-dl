@@ -92,6 +92,13 @@ export default class ProgressBar {
       }
     }
   }
+
+  resetProgressInfo(updateProgressInfo: IProgressItem[]) {
+    this.progressInfo = updateProgressInfo
+    this.bar!.update(updateProgressInfo.length)
+    this.curr = updateProgressInfo.length
+  }
+
   // 暂停进度条的打印
   pause () {
     if (this.bar) this.bar.stop()
