@@ -1,6 +1,7 @@
 import path from 'node:path'
 import pLimit from 'p-limit'
 import ProgressBar from './lib/ProgressBar'
+import type { IProgressItem } from './lib/ProgressBar'
 import { fixPathName, existsMkdir } from './utils'
 import { parseBookInfo, getImgList } from './lib/parse'
 import { saveImgList, writeBookInfoFile } from './lib/download'
@@ -59,6 +60,10 @@ export async function run(config: Config, hooks: RunHooks) {
   // 下载中断 重新获取下载进度数据
   if (progressBar.isDownloadInterrupted) {
     if (hooks.downloadInterrupted) hooks?.downloadInterrupted()
+    // 根据匹配chaptersList 重新更新 progressInfo 仅保留符合chaptersList
+    // 因为有种情况 漫画更新 url一致 但对应的内容由于更新变化了
+    const updateProgressInfo: IProgressItem[] = []
+
     // 从process.json中读取已下载的数据 对 chaptersList 回填 已下载的数据
     // 并过滤出 chaptersList中未下载的
     chaptersList = chaptersList.filter((chaptersItem) => {
@@ -68,10 +73,13 @@ export async function run(config: Config, hooks: RunHooks) {
         if (isSameHref && isSameName) {
           chaptersItem.imageList = item.imageList
           chaptersItem.imageListPath = item.imageListPath
+          updateProgressInfo.push(item)
         }
         return isSameHref && isSameName
       })
     })
+    // ! 漫画更新 url一致 但对应的内容由于更新变化了 重新更新符合的progressInfo
+    progressBar.progressInfo = updateProgressInfo
   }
 
   const LIMIT_MAX = 10
