@@ -1,5 +1,6 @@
 import fs from 'node:fs/promises'
 import cliProgress from 'cli-progress'
+import { rimraf } from 'rimraf'
 
 export interface IProgressItem {
   name: string,
@@ -93,10 +94,25 @@ export default class ProgressBar {
     }
   }
 
-  resetProgressInfo(updateProgressInfo: IProgressItem[]) {
-    this.progressInfo = updateProgressInfo
-    this.bar!.update(updateProgressInfo.length)
-    this.curr = updateProgressInfo.length
+  async resetProgressInfo(updateProgressInfo: IProgressItem[]) {
+    if (updateProgressInfo.length < this.progressInfo.length) {
+      const needDeleteList = this.progressInfo.filter((oldData) => {
+        return !updateProgressInfo.some(item => {
+          return item.href == oldData.href &&
+            item.name === oldData.name &&
+            item.rawName === oldData.rawName
+        })
+      })
+      this.progressInfo = updateProgressInfo
+      this.bar!.update(updateProgressInfo.length)
+      this.curr = updateProgressInfo.length
+      // 删除已下载但已经不符合最新漫画目录的文件夹
+      const promiseList = needDeleteList.map(needDel => {
+        return rimraf(needDel.path, {preserveRoot: true})
+      })
+      await Promise.all(promiseList)
+    }
+
   }
 
   // 暂停进度条的打印
