@@ -22,4 +22,9 @@ const getLogger = () => {
   return log4js.getLogger('comic-book-dl')
 }
 
-export default getLogger()
+const logger = getLogger()
+
+export {
+  logger,
+  getLogger
+}

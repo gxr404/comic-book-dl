@@ -1,9 +1,5 @@
 import fs from 'node:fs/promises'
-
 import cliProgress from 'cli-progress'
-
-import logger from './log'
-
 
 export interface IProgressItem {
   path: string,
@@ -19,6 +15,7 @@ export default class ProgressBar {
   progressInfo: IProgress = []
   curr: number = 0
   total: number = 0
+  /** 是否中断下载 */
   isDownloadInterrupted: boolean = false
   multiBar: cliProgress.MultiBar | null = null
   bar: cliProgress.SingleBar | null = null
@@ -35,10 +32,8 @@ export default class ProgressBar {
     this.curr = this.progressInfo.length
 
     if (this.curr === this.total) return
-    if (this.curr > 0 && this.curr !== this.total) {
-      this.isDownloadInterrupted = true
-      logger.info('根据上次数据继续断点下载')
-    }
+
+    this.isDownloadInterrupted = this.curr > 0 && this.curr !== this.total
 
     this.multiBar = new cliProgress.MultiBar({
       format: ' {bar} | {file} | {value}/{total}',

@@ -36,6 +36,7 @@
     "url": "git+https://github.com/gxr404/comic-book-dl.git"
   },
   "dependencies": {
+    "@inquirer/prompts": "^3.3.0",
     "cac": "^6.7.14",
     "cheerio": "^1.0.0-rc.12",
     "cli-progress": "3.12.0",

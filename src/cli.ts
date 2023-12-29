@@ -1,7 +1,8 @@
-import { readFileSync } from 'fs'
+import { readFileSync } from 'node:fs'
 import { cac } from 'cac'
 import { main } from './index'
-import logger from './log'
+import { logger } from './utils'
+import { update } from './update'
 
 const cli = cac('comic-book-dl')
 
@@ -14,6 +15,21 @@ export interface IOptions {
 const { version } = JSON.parse(
   readFileSync(new URL('../package.json', import.meta.url)).toString(),
 )
+
+cli.command('update', '更新已下载的漫画')
+  .option('-d, --distPath <dir>', '下载的目录 eg: -d comic-book-dist', {
+    default: 'comic-book-dist',
+  })
+  .action(async (options: IOptions) => {
+    try {
+      await update({
+        bookPath: options.distPath
+      })
+    } catch (err) {
+      console.log(err)
+      logger.error(err.message || 'unknown exception')
+    }
+  })
 
 cli
   .command('<url>', '包子漫画-漫画目录页url')

@@ -23,9 +23,9 @@ function randUserAgent({ browser = 'chrome', os = 'mac os', device = 'desktop' }
 }
 
 let UA = randUserAgent({
-  browser: "chrome",
-  device: "desktop",
-  os: "windows"
+  browser: 'chrome',
+  device: 'desktop',
+  os: 'windows'
 })
 UA = `${UA} ${Math.floor(Math.random() * 1000000)}`
 

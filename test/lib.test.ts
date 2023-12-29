@@ -1,19 +1,9 @@
+import { existsSync, readFileSync, writeFileSync } from 'node:fs'
 import { expect, test, describe } from 'vitest'
-import { existsSync, readFileSync } from 'fs'
-import { existsMkdir, fixPathName, getImageName, getImgList, parseBookInfo, saveImg, saveImgList, writeBookInfoFile } from '../src'
-import type { BookInfo } from '../src'
-
-describe('test exist mkdir', () => {
-  const randNumber = Math.floor(Math.random()*1000000)
-  const testDistDir = `${__dirname}/.temp/existsMkdir/${randNumber}`
-
-  test('normal mkdir', () => {
-    existsMkdir(testDistDir)
-    expect(existsSync(testDistDir)).toBeTruthy()
-    expect(() => existsMkdir(testDistDir)).not.toThrowError('EEXIST: file already exists')
-  })
-
-})
+import { getImgList, parseBookInfo } from '../src/lib/parse'
+import { saveImg, saveImgList, scanFolder, writeBookInfoFile } from '../src/lib/download'
+import { getUrlFileName, existsMkdir } from '../src/utils'
+import type { BookInfo } from '../src/lib/parse'
 
 describe('test saveImgList', () => {
   test('test download img success', async () => {
@@ -26,7 +16,7 @@ describe('test saveImgList', () => {
     existsMkdir(testDistDir)
     await saveImgList(testDistDir, imgList)
     imgList.forEach(url => {
-      expect(existsSync(`${testDistDir}/${getImageName(url)}`)).toBe(true)
+      expect(existsSync(`${testDistDir}/${getUrlFileName(url)}`)).toBe(true)
     })
   })
   test('has fail image', async () => {
@@ -65,23 +55,15 @@ describe('test saveImgList', () => {
   })
 })
 
-
-// test('getImageName', () => {
-//   const url =  'https://s1.baozicdn.com/scomic/sishenjingjie-jiubaodairen/0/0-ai3o/1.jpg'
-//   const fileName = url.split('/').at(-1)
-//   expect(fileName).toBe('1.jpg')
-// })
-
 test('saveImg', async () => {
   const testDistDir = `${__dirname}/.temp/saveImg`
 
   existsMkdir(testDistDir)
   const imgUrl = 'https://s1.baozicdn.com/scomic/sishenjingjie-jiubaodairen/0/0-ai3o/1.jpg'
   await saveImg(testDistDir, imgUrl)
-  const data = readFileSync(`${testDistDir}/${getImageName(imgUrl)}`)
+  const data = readFileSync(`${testDistDir}/${getUrlFileName(imgUrl)}`)
   expect(data).toMatchSnapshot()
 })
-
 
 describe('parse', () => {
   test('parse Info', async () => {
@@ -89,6 +71,7 @@ describe('parse', () => {
     expect.soft(_bookInfo).not.toBeFalsy()
     const bookInfo = _bookInfo as BookInfo
     expect.soft(bookInfo.name).toBeTruthy()
+    expect.soft(bookInfo.url).toBeTruthy()
     expect.soft(bookInfo.author).toBeTruthy()
     expect.soft(bookInfo.coverUrl).toBeTruthy()
     expect.soft(bookInfo.desc).toBeTruthy()
@@ -156,14 +139,6 @@ describe('get image list', () => {
 //   })
 // })
 
-describe('fixPathName', () => {
-  test('path _', () => {
-    expect(fixPathName('a/b/c')).toBe('a_b_c')
-  })
-  test('path \\s', () => {
-    expect(fixPathName(' a/b/c ')).toBe('a_b_c')
-  })
-})
 
 describe('writeBookInfoFile', async () => {
   const testDistDir = `${__dirname}/.temp/writeBookInfoFile`
@@ -172,21 +147,26 @@ describe('writeBookInfoFile', async () => {
   const bookInfo = {
     author:'久保帶人',
     chapters:[{
-      name: "第1話 死神&草莓",
+      name: "0_第1話 死神&草莓",
+      rawName: "第1話 死神&草莓",
       href: "https://www.fzmanga.com/user/page_direct?comic_id=sishenjingjie-jiubaodairen&section_slot=0&chapter_slot=0",
       imageList: [],
-      imageListPath: []
+      imageListPath: [],
+      index: 0
     },
     {
-      name: "第2話 始發者",
+      name: "1_第2話 始發者",
+      rawName: "第2話 始發者",
       href: "https://www.fzmanga.com/user/page_direct?comic_id=sishenjingjie-jiubaodairen&section_slot=0&chapter_slot=1",
       imageList: [],
-      imageListPath: []
+      imageListPath: [],
+      index: 1
     }],
     coverPath: '',
     coverUrl:'https://static-tw.baozimh.com/cover/sishenjingjie-jiubaodairen.jpg?w=285&h=375&q=100',
     desc:'看似暴力單薄，實則善良勇敢、愛護家庭的少年黑崎一護，擁有能看見靈的體質。直到遇見了死神•朽木露琪亞後，他身邊的一切事物開始了翻天覆地的變化。',
-    name:'死神/境·界'
+    name:'死神/境·界',
+    url: 'https://www.baozimh.com/comic/sishenjingjie-jiubaodairen'
   }
   await writeBookInfoFile(bookInfo, testDistDir)
   test('exits bookInfo.json', () => {
@@ -197,5 +177,56 @@ describe('writeBookInfoFile', async () => {
   })
   test('exits cover image', () => {
     expect(existsSync(`${testDistDir}/cover.jpg`)).toBe(true)
+  })
+})
+
+describe('scan folder', () => {
+  let testDistDir = `${__dirname}/.temp/scanFolder/`
+
+  test('normal', async () => {
+    testDistDir = `${testDistDir}/normal`
+    const testDirA = `${testDistDir}/testA`
+    const testDirB = `${testDistDir}/tetsB`
+    existsMkdir(testDirA)
+    existsMkdir(testDirB)
+    const testABookInfo = {
+      author:'AAA',
+      chapters:[],
+      coverPath: '',
+      coverUrl:'',
+      desc:'AAAAAA',
+      name:'AAAA',
+      url: ''
+    }
+    const testBBookInfo = {
+      author:'BBB',
+      chapters:[],
+      coverPath: '',
+      coverUrl:'',
+      desc:'BBBB',
+      name:'BBB',
+      url: ''
+    }
+    writeFileSync(`${testDirA}/bookInfo.json`, JSON.stringify(testABookInfo, null, 2))
+    writeFileSync(`${testDirB}/bookInfo.json`, JSON.stringify(testBBookInfo, null, 2))
+    const bookInfoList = await scanFolder(testDistDir)
+    expect(bookInfoList).toHaveLength(2)
+    expect(bookInfoList[0]).toEqual(testABookInfo)
+    expect(bookInfoList[1]).toEqual(testBBookInfo)
+  })
+
+  test('empty folder', async () => {
+    testDistDir = `${testDistDir}/emptyFolder`
+    existsMkdir(testDistDir)
+    const bookInfoList = await scanFolder(testDistDir)
+    expect(bookInfoList).toHaveLength(0)
+  })
+
+  test('file type', async () => {
+    testDistDir = `${testDistDir}/fileType`
+    existsMkdir(testDistDir)
+    writeFileSync(`${testDistDir}/fileType.json`, JSON.stringify({}, null, 2))
+    const bookInfoList = await scanFolder(testDistDir)
+    expect(bookInfoList).toHaveLength(0)
   })
 })
