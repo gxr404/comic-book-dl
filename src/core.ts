@@ -63,12 +63,13 @@ export async function run(config: Config, hooks: RunHooks) {
     // 并过滤出 chaptersList中未下载的
     chaptersList = chaptersList.filter((chaptersItem) => {
       return !progressBar.progressInfo.some(item => {
-        const isFind = item.href === chaptersItem.href
-        if (isFind) {
+        const isSameHref = item.href === chaptersItem.href
+        const isSameName = item.rawName == chaptersItem.rawName
+        if (isSameHref && isSameName) {
           chaptersItem.imageList = item.imageList
           chaptersItem.imageListPath = item.imageListPath
         }
-        return isFind
+        return isSameHref && isSameName
       })
     })
   }
@@ -112,8 +113,11 @@ export async function run(config: Config, hooks: RunHooks) {
       item.imageListPath = imageListPath
       progressBar.multiBar!.remove(curBar)
       await progressBar.updateProgress({
+        name: item.name,
+        rawName: item.rawName,
         path: chaptersItemPath,
         href: item.href,
+        index: item.index,
         imageList,
         imageListPath
       }, isAllSuccess)

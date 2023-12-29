@@ -2,6 +2,9 @@ import fs from 'node:fs/promises'
 import cliProgress from 'cli-progress'
 
 export interface IProgressItem {
+  name: string,
+  rawName: string,
+  index: number,
   path: string,
   href: string,
   imageList: string[],
