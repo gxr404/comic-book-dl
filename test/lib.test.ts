@@ -97,6 +97,30 @@ describe('parse', () => {
     const isSuccess = await parseBookInfo('https://www.fzmanga.com/comic/1233')
     expect.soft(isSuccess).toBeFalsy()
   })
+
+  test('test language', async () => {
+    const wwwUrl = 'https://www.fzmanga.com/comic/sishenjingjie-jiubaodairen'
+    let wwwBookInfo = await parseBookInfo(wwwUrl)
+    expect.soft(wwwBookInfo).not.toBeFalsy()
+    wwwBookInfo = wwwBookInfo as BookInfo
+    expect(wwwBookInfo.language).toMatch(/简体|繁體/)
+    expect(wwwBookInfo.url).toMatch(/https:\/\/(cn\.|tw\.)./)
+
+    const cnUrl = 'https://cn.fzmanga.com/comic/sishenjingjie-jiubaodairen'
+    let cnBookInfo = await parseBookInfo(cnUrl)
+    expect.soft(cnBookInfo).not.toBeFalsy()
+    cnBookInfo = cnBookInfo as BookInfo
+    expect.soft(cnBookInfo.language).toBe('简体')
+    expect.soft(cnBookInfo.url).toBe(cnUrl)
+
+    const twUrl = 'https://tw.fzmanga.com/comic/sishenjingjie-jiubaodairen'
+    let twBookInfo = await parseBookInfo(twUrl)
+    expect.soft(twBookInfo).not.toBeFalsy()
+    twBookInfo = twBookInfo as BookInfo
+    expect.soft(twBookInfo.language).toBe('繁體')
+    expect.soft(twBookInfo.url).toBe(twUrl)
+
+  })
 })
 
 describe('get image list', () => {
@@ -166,7 +190,8 @@ describe('writeBookInfoFile', async () => {
     coverUrl:'https://static-tw.baozimh.com/cover/sishenjingjie-jiubaodairen.jpg?w=285&h=375&q=100',
     desc:'看似暴力單薄，實則善良勇敢、愛護家庭的少年黑崎一護，擁有能看見靈的體質。直到遇見了死神•朽木露琪亞後，他身邊的一切事物開始了翻天覆地的變化。',
     name:'死神/境·界',
-    url: 'https://www.baozimh.com/comic/sishenjingjie-jiubaodairen'
+    url: 'https://www.baozimh.com/comic/sishenjingjie-jiubaodairen',
+    language: ''
   }
   await writeBookInfoFile(bookInfo, testDistDir)
   test('exits bookInfo.json', () => {

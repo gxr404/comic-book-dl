@@ -30,7 +30,8 @@ export interface BookInfo {
   coverUrl: string,
   coverPath: string,
   chapters: ChaptersItem[],
-  url: string
+  url: string,
+  language: string
 }
 
 export async function getImgList(url: string): Promise<string[]> {
@@ -81,6 +82,22 @@ export async function parseBookInfo(url: string): Promise<BookInfo | false> {
   const coverUrl = $('.l-content .pure-g.de-info__box amp-img').attr('src')?.trim() ?? ''
   // 全部章节
   const chaptersEl = $('#chapter-items a.comics-chapters__item, #chapters_other_list a.comics-chapters__item')
+
+  let language = $('.header .home-menu .pure-menu-list:nth-of-type(2) .pure-menu-item:nth-of-type(2) > a').text()?.trim() ?? ''
+  const realLanguage = language === '繁體' ? '简体' : '繁體'
+  language = language && realLanguage
+
+  if (language) {
+    const hostnameMap = new Map([
+      ['繁體', 'tw'],
+      ['简体', 'cn']
+    ])
+    const newHostName = hostnameMap.get(language)
+    if (newHostName) {
+      url = url.replace(/https:\/\/www\./, `https://${newHostName}.`)
+    }
+  }
+
   let chapters: ChaptersItem[] = []
   const {origin} = new URL(url)
 
@@ -157,6 +174,7 @@ export async function parseBookInfo(url: string): Promise<BookInfo | false> {
     coverUrl,
     coverPath: '',
     chapters,
-    url
+    url,
+    language
   }
 }
