@@ -105,6 +105,7 @@ describe('parse', () => {
     wwwBookInfo = wwwBookInfo as BookInfo
     expect(wwwBookInfo.language).toMatch(/简体|繁體/)
     expect(wwwBookInfo.url).toMatch(/https:\/\/(cn\.|tw\.)./)
+    expect(wwwBookInfo.rawUrl).toMatch(wwwUrl)
 
     const cnUrl = 'https://cn.fzmanga.com/comic/sishenjingjie-jiubaodairen'
     let cnBookInfo = await parseBookInfo(cnUrl)
@@ -190,8 +191,9 @@ describe('writeBookInfoFile', async () => {
     coverUrl:'https://static-tw.baozimh.com/cover/sishenjingjie-jiubaodairen.jpg?w=285&h=375&q=100',
     desc:'看似暴力單薄，實則善良勇敢、愛護家庭的少年黑崎一護，擁有能看見靈的體質。直到遇見了死神•朽木露琪亞後，他身邊的一切事物開始了翻天覆地的變化。',
     name:'死神/境·界',
-    url: 'https://www.baozimh.com/comic/sishenjingjie-jiubaodairen',
-    language: ''
+    url: 'https://tw.baozimh.com/comic/sishenjingjie-jiubaodairen',
+    language: '',
+    rawUrl: 'https://www.baozimh.com/comic/sishenjingjie-jiubaodairen'
   }
   await writeBookInfoFile(bookInfo, testDistDir)
   test('exits bookInfo.json', () => {

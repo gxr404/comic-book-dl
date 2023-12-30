@@ -32,7 +32,10 @@ export async function update(config: Config) {
       message: '已存在以下漫画，选择想更新的漫画',
       choices: [
         ...bookChoices
-      ]
+      ],
+      pageSize: 99,
+      required: true,
+      loop: false
     })
     if (answer.length === 0) {
       logger.error('× 未选中任何漫画更新')

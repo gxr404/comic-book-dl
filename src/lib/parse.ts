@@ -31,7 +31,8 @@ export interface BookInfo {
   coverPath: string,
   chapters: ChaptersItem[],
   url: string,
-  language: string
+  language: string,
+  rawUrl: string
 }
 
 export async function getImgList(url: string): Promise<string[]> {
@@ -62,6 +63,7 @@ export async function getImgList(url: string): Promise<string[]> {
 }
 
 export async function parseBookInfo(url: string): Promise<BookInfo | false> {
+  const rawUrl = url
   let response: got.Response<string>
   try {
     response = await got.get(url, {
@@ -175,6 +177,7 @@ export async function parseBookInfo(url: string): Promise<BookInfo | false> {
     coverPath: '',
     chapters,
     url,
-    language
+    language,
+    rawUrl
   }
 }

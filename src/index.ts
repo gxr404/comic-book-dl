@@ -1,6 +1,7 @@
 import { logger } from './utils'
 import type { ChaptersItem } from './lib/parse'
 import { run } from './core'
+import { scanFolder } from './lib/download'
 import type { Config, ErrorChapterItem } from './core'
 
 interface ChapterErrorMsgItem {
@@ -39,6 +40,12 @@ export function echoErrorMsg(
 }
 
 export async function main(config: Config) {
+  const bookInfoList = await scanFolder(config.bookPath)
+  const existedBookInfo = bookInfoList.find(bookInfo => {
+    return bookInfo.rawUrl === config.targetUrl
+  })
+  if (existedBookInfo) config.targetUrl = existedBookInfo.url
+
   await run(config, {
     parseErr() {
       logger.error('× 请输入正确的url... o(╥﹏╥)o')

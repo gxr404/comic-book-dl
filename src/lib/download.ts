@@ -29,8 +29,6 @@ export async function saveImgList(path: string, imgList: string[], saveImgCallba
   return await Promise.all(promiseList)
 }
 
-
-
 export async function saveImg(path: string, imgUrl: string, fixFileName?: string) {
   if (!imgUrl) return ''
   let imgName = getUrlFileName(imgUrl) ?? ''
