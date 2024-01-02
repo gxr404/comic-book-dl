@@ -107,6 +107,14 @@ describe('parse', () => {
     expect(wwwBookInfo.url).toMatch(/https:\/\/(cn\.|tw\.)./)
     expect(wwwBookInfo.rawUrl).toMatch(wwwUrl)
 
+    const emptyPreUrl = 'https://fzmanga.com/comic/sishenjingjie-jiubaodairen'
+    let emptyPreBookInfo = await parseBookInfo(emptyPreUrl)
+    expect.soft(emptyPreBookInfo).not.toBeFalsy()
+    emptyPreBookInfo = emptyPreBookInfo as BookInfo
+    expect(emptyPreBookInfo.language).toMatch(/简体|繁體/)
+    expect(emptyPreBookInfo.url).toMatch(/https:\/\/(cn\.|tw\.)./)
+    expect(emptyPreBookInfo.rawUrl).toMatch(emptyPreUrl)
+
     const cnUrl = 'https://cn.fzmanga.com/comic/sishenjingjie-jiubaodairen'
     let cnBookInfo = await parseBookInfo(cnUrl)
     expect.soft(cnBookInfo).not.toBeFalsy()

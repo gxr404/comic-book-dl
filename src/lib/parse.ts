@@ -96,7 +96,9 @@ export async function parseBookInfo(url: string): Promise<BookInfo | false> {
     ])
     const newHostName = hostnameMap.get(language)
     if (newHostName) {
-      url = url.replace(/https:\/\/www\./, `https://${newHostName}.`)
+      // xxx.aaa.com -> cn.aaa.com
+      // aaa.com -> cn.aaa.com
+      url = url.replace(/(http|https):\/\/(www\.)?([^.\s]+)\.(com)/, `$1://${newHostName}.$3.$4`)
     }
   }
 
