@@ -92,7 +92,11 @@ export async function run(config: Config, hooks: RunHooks) {
     return limit(async () => {
       const chaptersItemPath = `${bookDistPath}/chapters/${item.name}`
       existsMkdir(chaptersItemPath)
-      const imageList = await getImgList(item.href)
+      let getImageListSuccess = true
+      const imageList = await getImgList(item.href).catch(() => {
+        getImageListSuccess = false
+        return [] as string[]
+      })
       let imageListPath: string[] = []
       const curBar = progressBar.multiBar!.create(imageList.length, 0, {
         file: `下载「${item.name}」中的图片...`
@@ -128,7 +132,7 @@ export async function run(config: Config, hooks: RunHooks) {
         index: item.index,
         imageList,
         imageListPath
-      }, isAllSuccess)
+      }, isAllSuccess && getImageListSuccess)
       return isAllSuccess
     })
   })
