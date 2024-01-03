@@ -31,9 +31,9 @@ export function echoErrorMsg(
 
   logger.error(`《${bookName}》本次执行总数${chaptersList.length}话，✕ 失败${errChaptersMsg.length}话`)
   for (const errInfo of errChaptersMsg) {
-    logger.error(`└── ✕ ${errInfo.chapterName}`)
+    logger.error(`  └── ✕ ${errInfo.chapterName}`)
     errInfo.imgList.forEach(imgUrl => {
-      logger.error(` └── ${imgUrl}`)
+      logger.error(`   └── ${imgUrl}`)
     })
   }
   logger.error('o(╥﹏╥)o 由于网络波动或链接失效以上下载失败，可重新执行命令重试(PS:不会影响已下载成功的数据)')

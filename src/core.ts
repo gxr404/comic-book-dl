@@ -39,7 +39,7 @@ export async function run(config: Config, hooks: RunHooks) {
   }
 
   const bookName = bookInfo.name
-  const bookDistPath = path.resolve(config.bookPath, fixPathName(bookName))
+  const bookDistPath = path.resolve(config.bookPath, bookInfo.pathName)
   existsMkdir(bookDistPath)
 
   const total = bookInfo.chapters.length

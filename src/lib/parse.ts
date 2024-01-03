@@ -25,6 +25,7 @@ export interface ChaptersItem {
 
 export interface BookInfo {
   name: string,
+  pathName: string,
   author: string,
   desc: string,
   coverUrl: string,
@@ -173,6 +174,7 @@ export async function parseBookInfo(url: string): Promise<BookInfo | false> {
 
   return {
     name,
+    pathName: fixPathName(name),
     author,
     desc,
     coverUrl,

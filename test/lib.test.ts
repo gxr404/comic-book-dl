@@ -78,6 +78,16 @@ describe('parse', () => {
     expect.soft(bookInfo.chapters.length).toBeGreaterThan(0)
   })
 
+  test('解析时 漫画名含特殊字符', async () => {
+    const _bookInfo = await parseBookInfo('https://cn.baozimh.com/comic/sishenjingjie-jiubaodairen')
+    expect.soft(_bookInfo).not.toBeFalsy()
+    const bookInfo = _bookInfo as BookInfo
+    expect.soft(bookInfo.name).toBeTruthy()
+    expect.soft(bookInfo.pathName).toBeTruthy()
+    expect.soft(bookInfo.name).toBe('死神/境·界')
+    expect.soft(bookInfo.pathName).toBe('死神_境·界')
+  })
+
   test('parse Info preChapters and nextChapters', async () => {
     const _bookInfo = await parseBookInfo('https://www.fzmanga.com/comic/sishenjingjie-jiubaodairen')
     expect.soft(_bookInfo).not.toBeFalsy()

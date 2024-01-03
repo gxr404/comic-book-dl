@@ -64,7 +64,7 @@ async function updateRun(bookInfo: BookInfo, bookDistPath: string) {
         return
       }
       chaptersList.forEach((chapters) => {
-        logger.info(`└── √ 已更新: ${chapters.rawName}`)
+        logger.info(`  └── √ 已更新: ${chapters.rawName}`)
       })
     }
   })
