@@ -138,7 +138,7 @@ export async function run(config: Config, hooks: RunHooks) {
         imageList,
         imageListPath
       }, isAllSuccess && getImageListSuccess)
-      return isAllSuccess
+      return isAllSuccess && getImageListSuccess
     })
   })
 
