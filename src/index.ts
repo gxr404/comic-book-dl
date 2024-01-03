@@ -19,12 +19,12 @@ export function echoErrorMsg(
     const errChapter = errChaptersMsg.find(msg => {
       return msg.chapterName === item.chapter.name
     })
-    if (errChapter) {
+    if (errChapter && item.imgUrl) {
       errChapter.imgList.push(item.imgUrl)
     } else {
       errChaptersMsg.push({
         chapterName: item.chapter.name,
-        imgList: [item.imgUrl]
+        imgList: item.imgUrl ? [item.imgUrl] : []
       })
     }
   })

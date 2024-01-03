@@ -22,7 +22,8 @@ interface RunHooks {
 
 export interface ErrorChapterItem {
   bookName: string,
-  imgUrl: string,
+  /** 图片获取失败则所有图片都算失败 无指定的图片 */
+  imgUrl?: string,
   chapter:  ChaptersItem
 }
 
@@ -95,6 +96,10 @@ export async function run(config: Config, hooks: RunHooks) {
       let getImageListSuccess = true
       const imageList = await getImgList(item.href).catch(() => {
         getImageListSuccess = false
+        errorList.push({
+          bookName,
+          chapter: item
+        })
         return [] as string[]
       })
       let imageListPath: string[] = []
