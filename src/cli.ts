@@ -33,8 +33,8 @@ cli.command('update', '更新已下载的漫画')
 
 cli
   .command('<url>', '包子漫画-漫画目录页url')
-  .option('-d, --distPath <dir>', '下载的目录 eg: -d comic-book-dist', {
-    default: 'comic-book-dist',
+  .option('-d, --distPath <dir>', '下载的目录 eg: -d comic-book', {
+    default: 'comic-book',
   })
   .action(async (url, options: IOptions) => {
     try {

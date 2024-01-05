@@ -8,3 +8,4 @@ assets
 .eslintrc.js
 .eslintignore
 .editorconfig
+*.log
