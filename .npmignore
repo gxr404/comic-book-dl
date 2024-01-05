@@ -9,3 +9,5 @@ assets
 .eslintignore
 .editorconfig
 *.log
+.prettierrc.js
+.eslintrc.cjs
