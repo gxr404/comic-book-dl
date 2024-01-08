@@ -41,7 +41,7 @@ $ comic-book-dl --help
     -v, --version         Display version number
 ```
 
-### Start
+## Start
 
 开始新下载一部漫画到本地，会在当前目录创建 comic-book目录存放漫画的图片
 
@@ -56,7 +56,7 @@ comic-book-dl "https://cn.baozimh.com/comic/mengoushia-feiniaocheng"
 
 下载仅是下载漫画的图片，安装 [`comic-book-browser`](https://github.com/gxr404/comic-book-browser) 开始沉浸式的阅读体验
 
-### 更新
+## 更新
 
 如果漫画后续有更新,可使用 `update` 命令更新
 
