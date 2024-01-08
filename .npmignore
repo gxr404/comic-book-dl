@@ -11,3 +11,4 @@ assets
 *.log
 .prettierrc.js
 .eslintrc.cjs
+docs

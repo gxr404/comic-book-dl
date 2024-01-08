@@ -59,6 +59,7 @@ export async function main(config: Config) {
     error: echoErrorMsg,
     success(bookName, bookDistPath) {
       logger.info(`√ 已完成: ${bookDistPath}`)
+      logger.info('(つ•̀ω•́)つ 欢迎star: https://github.com/gxr404/comic-book-dl')
     }
   })
   process.exit(0)

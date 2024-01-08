@@ -4,7 +4,8 @@ module.exports = {
     'types',
     'node_modules',
     'bin',
-    'test'
+    'test',
+    'docs'
   ],
   env: {
     node: true,
