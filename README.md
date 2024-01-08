@@ -5,7 +5,7 @@
 <!-- markdownlint-disable MD033 -->
 
 <p align="center">
-  <b>一款漫画下载器</b><br/>
+  <b>一款漫画下载器(搭配<a href="https://github.com/gxr404/comic-book-browser">comic-book-browser</a>使用)</b><br/>
   <b>开源 | 高效 | 易用</b><br/><br/>
   <img src="https://img.shields.io/npm/v/comic-book-dl" alt="npm">
   <img src="https://img.shields.io/badge/PR-welcome-blue" alt="Static Badge">
