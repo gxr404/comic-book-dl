@@ -47,6 +47,8 @@ export async function update(config: Config) {
   for (const bookInfo of bookInfoList) {
     await updateRun(bookInfo, bookDistPath)
   }
+
+  logger.info('(つ•̀ω•́)つ 欢迎star: https://github.com/gxr404/comic-book-dl')
 }
 
 async function updateRun(bookInfo: BookInfo, bookDistPath: string) {
