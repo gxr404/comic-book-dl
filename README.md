@@ -1,12 +1,12 @@
 # comic-book-dl
 
+![logo](https://socialify.git.ci/gxr404/comic-book-dl/image?font=Source%20Code%20Pro&logo=https%3A%2F%2Fgithub.com%2Fgxr404%2Fcomic-book-dl%2Fraw%2Fmain%2Fdocs%2Flogo.png&name=1&pattern=Circuit%20Board&theme=Light)
+
 <!-- markdownlint-disable MD033 -->
 
 <p align="center">
-  <b>一款漫画下载器</b>
-  <br>
-  <b>开源 | 高效 | 易用</b>
-  <br>
+  <b>一款漫画下载器</b><br/>
+  <b>开源 | 高效 | 易用</b><br/><br/>
   <img src="https://img.shields.io/npm/v/comic-book-dl" alt="npm">
   <img src="https://img.shields.io/badge/PR-welcome-blue" alt="Static Badge">
   <img src="https://img.shields.io/github/license/gxr404/comic-book-dl" alt="GitHub License">
