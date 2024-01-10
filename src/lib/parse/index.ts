@@ -10,7 +10,7 @@ const ruleMap = [
       getImgList: baozi.getImgList,
       // url预处理
       preHandleUrl(url: string) {
-        return url.replace(/tw./, 'cn.')
+        return url.replace(/tw\.|www\./, 'cn.')
       }
     }
   },
