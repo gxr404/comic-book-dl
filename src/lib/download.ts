@@ -10,7 +10,7 @@ import { BookInfo } from './parse'
 type TSaveImgCallback = (imgUrl: string, isSuccess: boolean) => void
 
 export async function saveImgList(path: string, imgList: string[], saveImgCallback?: TSaveImgCallback) {
-  const limit = pLimit(10)
+  const limit = pLimit(6)
   const promiseList = imgList.map(imgUrl => limit(async () => {
     let isSuccess = true
     // let imgPath = ''
@@ -32,6 +32,7 @@ export async function saveImgList(path: string, imgList: string[], saveImgCallba
 export async function saveImg(path: string, imgUrl: string, fixFileName?: string) {
   if (!imgUrl) return ''
   let imgName = getUrlFileName(imgUrl) ?? ''
+  imgName = decodeURIComponent(imgName)
   if (fixFileName) {
     const suffix = imgName?.split('.')?.[1] ?? 'jpg'
     imgName = `${fixFileName}.${suffix}`
@@ -54,7 +55,7 @@ export async function writeBookInfoFile(bookInfo: BookInfo, bookDistPath: string
 }
 
 export async function scanFolder(distPath: string) {
-  const LIMIT_MAX = 10
+  const LIMIT_MAX = 6
   let folderList: string[]
   try {
     folderList = await readdir(distPath)

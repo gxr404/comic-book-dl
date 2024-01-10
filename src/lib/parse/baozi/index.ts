@@ -1,40 +1,8 @@
 import got from 'got'
 import { load } from 'cheerio'
-import { fixPathName, UA } from '../utils'
+import { fixPathName, UA } from '../../../utils'
+import { ChaptersItem, BookInfo } from '../index'
 
-export interface ChaptersItem {
-  name: string,
-  rawName: string,
-  index: number,
-  href: string,
-  imageList: string[],
-  imageListPath: string[]
-  preChapter?: {
-    name: string,
-    href: string,
-    rawName: string,
-    index: number
-  },
-  nextChapter?: {
-    name: string,
-    href: string,
-    rawName: string,
-    index: number
-  },
-}
-
-export interface BookInfo {
-  name: string,
-  pathName: string,
-  author: string,
-  desc: string,
-  coverUrl: string,
-  coverPath: string,
-  chapters: ChaptersItem[],
-  url: string,
-  language: string,
-  rawUrl: string
-}
 
 export async function getImgList(url: string): Promise<string[]> {
   const response = await got(url, {
@@ -56,6 +24,7 @@ export async function getImgList(url: string): Promise<string[]> {
   const nextChapterEl = $(nextChapterList[findIndex]).find('a')
   const nextChapterHref = nextChapterEl.attr('href')
   const nextChapterText = nextChapterEl.text()
+  // baozi 页数超过50则会有下一页, 递归执行直到没有下一页
   if (/下一頁|下一页/g.test(nextChapterText) && nextChapterHref) {
     const nextImgList = await getImgList(nextChapterHref)
     imgList = imgList.concat(nextImgList)
@@ -100,6 +69,10 @@ export async function parseBookInfo(url: string): Promise<BookInfo | false> {
       // xxx.aaa.com -> cn.aaa.com
       // aaa.com -> cn.aaa.com
       url = url.replace(/(http|https):\/\/(www\.)?([^.\s]+)\.(com)/, `$1://${newHostName}.$3.$4`)
+      // 不管繁体简体都用 cn.xx.com
+      // 因为墙内也没法访问tw域名也会转cn域名
+      // tw.xx.com -> cn.xxx.com
+      url = url.replace(/tw\./, 'cn.')
     }
   }
 

@@ -3,9 +3,9 @@ import pLimit from 'p-limit'
 import ProgressBar from './lib/ProgressBar'
 import type { IProgressItem } from './lib/ProgressBar'
 import { existsMkdir } from './utils'
-import { parseBookInfo, getImgList } from './lib/parse'
+import { matchParse } from './lib/parse/index'
 import { saveImgList, writeBookInfoFile } from './lib/download'
-import type { ChaptersItem } from './lib/parse'
+import type { ChaptersItem } from './lib/parse/index'
 
 interface RunHooks {
   // 漫画url解析错误
@@ -32,7 +32,21 @@ export interface Config {
   targetUrl: string;
 }
 
+// process.on('warning', e => {
+//   writeFile('./warn.log', JSON.stringify(e.stack, null, 2))
+//   console.warn(e.stack?.at(-1))
+// })
+
 export async function run(config: Config, hooks: RunHooks) {
+  const match = matchParse(config.targetUrl)
+  if (!match) {
+    if (hooks.parseErr) hooks.parseErr()
+    return
+  }
+  const { parseBookInfo, getImgList, preHandleUrl } = match
+  if (typeof preHandleUrl === 'function') {
+    config.targetUrl = preHandleUrl(config.targetUrl)
+  }
   const bookInfo = await parseBookInfo(config.targetUrl)
   if (!bookInfo) {
     if (hooks.parseErr) hooks.parseErr()
@@ -83,7 +97,7 @@ export async function run(config: Config, hooks: RunHooks) {
     progressBar.resetProgressInfo(updateProgressInfo)
   }
 
-  const LIMIT_MAX = 10
+  const LIMIT_MAX = 6
 
   const limit = pLimit(LIMIT_MAX)
 

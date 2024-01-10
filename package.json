@@ -44,6 +44,7 @@
     "log4js": "^6.9.1",
     "p-limit": "^5.0.0",
     "patch-package": "^8.0.0",
+    "protobufjs": "^7.2.5",
     "rand-user-agent": "^1.0.109",
     "rimraf": "^5.0.5"
   },
