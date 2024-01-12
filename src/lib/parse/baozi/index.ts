@@ -1,7 +1,8 @@
 import got, {Response} from 'got'
 import { load } from 'cheerio'
 
-import { Base, BookInfo, ChaptersItem } from '@/lib/parse/base'
+import { Base } from '@/lib/parse/base'
+import type { BookInfo, ChaptersItem } from '@/lib/parse/base'
 import { fixPathName } from '@/utils'
 
 export class Baozi extends Base {

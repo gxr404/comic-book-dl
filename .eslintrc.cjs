@@ -5,7 +5,8 @@ module.exports = {
     'node_modules',
     'bin',
     'test',
-    'docs'
+    'docs',
+    'temp'
   ],
   env: {
     node: true,

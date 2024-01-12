@@ -2,7 +2,8 @@ import got, {Response} from 'got'
 import { load } from 'cheerio'
 
 import { fixPathName } from '@/utils'
-import { Base, BookInfo, ChaptersItem } from '@/lib/parse/base'
+import { Base } from '@/lib/parse/base'
+import type { BookInfo, ChaptersItem } from '@/lib/parse/base'
 import { ApiV4ChapterImageParse, ApiV4ChapterListParse, ApiV4Decrypt } from './crypto'
 
 const api = {

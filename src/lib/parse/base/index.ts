@@ -4,7 +4,7 @@ import got from 'got'
 import pLimit from 'p-limit'
 import { UA, getUrlFileName } from '@/utils'
 
-type TSaveImgCallback = (imgUrl: string, isSuccess: boolean) => void
+export type TSaveImgCallback = (imgUrl: string, isSuccess: boolean) => void
 
 export interface ChaptersItem {
   name: string,
@@ -73,7 +73,6 @@ export abstract class Base {
       let imgFileName = ''
       try {
         imgFileName = await this.saveImg(path, imgUrl)
-
       } catch(err) {
         // console.error(`save img Error: ${imgUrl}`)
         // console.error(err)
@@ -85,13 +84,13 @@ export abstract class Base {
     return await Promise.all(promiseList)
   }
   /** 通用保存图片方法 */
-  async saveImg(path: string, imgUrl: string, fixFileName?: string) {
+  async saveImg(path: string, imgUrl: string, fixFileName?: string, fixSuffix?: string) {
     if (!imgUrl) return ''
     let imgName = getUrlFileName(imgUrl) ?? ''
     imgName = decodeURIComponent(imgName)
     if (fixFileName) {
       const suffix = imgName?.split('.')?.[1] ?? 'jpg'
-      imgName = `${fixFileName}.${suffix}`
+      imgName = `${fixFileName}.${fixSuffix ?? suffix}`
     }
     await pipeline(
       got.stream(imgUrl, this.genReqOptions()),

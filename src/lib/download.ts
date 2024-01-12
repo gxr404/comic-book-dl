@@ -3,7 +3,8 @@ import { readdir, stat, readFile } from 'node:fs/promises'
 import { join } from 'node:path'
 import pLimit from 'p-limit'
 import { notEmpty } from '@/utils'
-import { Base, BookInfo } from '@/lib/parse/base'
+import { Base } from '@/lib/parse/base'
+import type { BookInfo } from '@/lib/parse/base'
 
 export async function writeBookInfoFile(bookInfo: BookInfo, bookDistPath: string, parseInstance: Base) {
   const coverPicPath = await parseInstance.saveImg(bookDistPath, bookInfo.coverUrl, 'cover')

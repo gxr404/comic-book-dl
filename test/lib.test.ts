@@ -5,6 +5,8 @@ import { existsMkdir } from '@/utils'
 import { matchParse } from '@/lib/parse'
 import { Baozi } from '@/lib/parse/baozi'
 import { Dmzj } from '@/lib/parse/dmzj'
+import { Baimangu } from '@/lib/parse/baimangu'
+import { Godamanga } from '@/lib/parse/godamanga'
 
 describe('match parse', () => {
   test('baozi site', async () => {
@@ -39,6 +41,34 @@ describe('match parse', () => {
       }
     })
   })
+
+  test('baimangu site', async () => {
+    const siteArr = [
+      'https://www.darpou.com/book/4995.html'
+    ]
+    siteArr.forEach(site => {
+      const matchObj = matchParse(site)
+      expect.soft(matchObj).not.toBeFalsy()
+      if (matchObj) {
+        expect.soft(matchObj.getInstance(site)).toBeInstanceOf(Baimangu)
+      }
+    })
+  })
+
+  test('godamanga site', async () => {
+    const siteArr = [
+      'https://cn.baozimh.one/manga/quanqiubingfengwodazaolemorianquanwu',
+      'https://cn.godamanga.com/manga/quanqiubingfengwodazaolemorianquanwu'
+    ]
+    siteArr.forEach(site => {
+      const matchObj = matchParse(site)
+      expect.soft(matchObj).not.toBeFalsy()
+      if (matchObj) {
+        expect.soft(matchObj.getInstance(site)).toBeInstanceOf(Godamanga)
+      }
+    })
+  })
+
 })
 
 // describe('test main', () => {

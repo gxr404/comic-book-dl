@@ -4,7 +4,7 @@ import { run } from '@/core'
 import { echoErrorMsg } from '@/index'
 import { logger, notEmpty } from '@/utils'
 import { scanFolder } from '@/lib/download'
-import { BookInfo } from '@/lib/parse/base'
+import type { BookInfo } from '@/lib/parse/base'
 
 interface Config {
   bookPath: string,

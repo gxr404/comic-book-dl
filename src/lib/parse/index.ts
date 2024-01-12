@@ -1,10 +1,12 @@
 import { Dmzj } from '@/lib/parse/dmzj'
 import { Baozi } from '@/lib/parse/baozi'
+import { Baimangu } from '@/lib/parse/baimangu'
+import { Godamanga } from '@/lib/parse/godamanga'
 
 const ruleMap = [
   {
-    /** 包子漫画 */
-    hostRule: /(.*?)baozi(.*?)|(.*?)fzmanga(.*?)/,
+    /** 包子漫画 排除掉baozi.one 因为是godamanga的镜像站 */
+    hostRule: /(.*?)baozi(.*)\.(?!one)|(.*?)fzmanga(.*?)/,
     parse: {
       getInstance(url: string) {
         return new Baozi(url)
@@ -22,6 +24,24 @@ const ruleMap = [
       getInstance(url: string) {
         return new Dmzj(url)
       },
+    }
+  },
+  {
+    /** goda漫画和 goda镜像站包子漫画 */
+    hostRule: /(.*?)godamanga(.*?)|(.*?)baozimh\.one(.*?)/,
+    parse: {
+      getInstance(url: string) {
+        return new Godamanga(url)
+      },
+    }
+  },
+  {
+    /** 百漫谷 */
+    hostRule: /(.*?)darpou(.*?)/,
+    parse: {
+      getInstance(url: string) {
+        return new Baimangu(url)
+      }
     }
   }
 ]
