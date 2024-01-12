@@ -1,11 +1,12 @@
 import { expect, test, describe } from 'vitest'
-import { getImgList, parseBookInfo } from '../../src/lib/parse/dmzj'
-import type { BookInfo } from '../../src/lib/parse'
+import { Dmzj } from '@/lib/parse/dmzj'
+import type { BookInfo } from '@/lib/parse/base'
 import {ApiV4ChapterImageParse, ApiV4ChapterListParse, ApiV4Decrypt} from '../../src/lib/parse/dmzj/crypto'
 
 describe('parseBookInfo', () => {
   test('parseBookInfo正常解析: mobile site', async () => {
-    const _bookInfo = await parseBookInfo('https://m.idmzj.com/info/qishishiyimeizuijinchuxiandeyilididiguoyuqinmile.html')
+    const dmzj = new Dmzj('https://m.idmzj.com/info/qishishiyimeizuijinchuxiandeyilididiguoyuqinmile.html')
+    const _bookInfo = await dmzj.parseBookInfo()
     expect.soft(_bookInfo).not.toBeFalsy()
     const bookInfo = _bookInfo as BookInfo
     expect.soft(bookInfo.name).toBeTruthy()
@@ -16,7 +17,8 @@ describe('parseBookInfo', () => {
     expect.soft(bookInfo.chapters.length).toBeGreaterThan(0)
   })
   test('parseBookInfo正常解析: pc site', async () => {
-    const _bookInfo = await parseBookInfo('https://www.idmzj.com/info/qishishiyimeizuijinchuxiandeyilididiguoyuqinmile.html')
+    const dmzj = new Dmzj('https://www.idmzj.com/info/qishishiyimeizuijinchuxiandeyilididiguoyuqinmile.html')
+    const _bookInfo = await dmzj.parseBookInfo()
     expect.soft(_bookInfo).not.toBeFalsy()
     const bookInfo = _bookInfo as BookInfo
     expect.soft(bookInfo.name).toBeTruthy()
@@ -27,7 +29,8 @@ describe('parseBookInfo', () => {
     expect.soft(bookInfo.chapters.length).toBeGreaterThan(0)
   })
   test('parse Info preChapters and nextChapters', async () => {
-    const _bookInfo = await parseBookInfo('https://m.idmzj.com/info/swdjmxzdwbzwhbyzdwqrszbwncs.html')
+    const dmzj = new Dmzj('https://m.idmzj.com/info/swdjmxzdwbzwhbyzdwqrszbwncs.html')
+    const _bookInfo = await dmzj.parseBookInfo()
     expect.soft(_bookInfo).not.toBeFalsy()
     const bookInfo = _bookInfo as BookInfo
 
@@ -41,7 +44,8 @@ describe('parseBookInfo', () => {
     expect.soft(bookInfo.chapters[lastIndex].preChapter).toHaveProperty('href')
   })
   test('error url',async () => {
-    const isSuccess = await parseBookInfo('https://m.idmzj.com/info/1233')
+    const dmzj = new Dmzj('https://m.idmzj.com/info/1233')
+    const isSuccess = await dmzj.parseBookInfo()
     expect.soft(isSuccess).toBeFalsy()
   })
 })
@@ -49,8 +53,9 @@ describe('parseBookInfo', () => {
 
 describe('getImgList', () => {
   test('getImgList正常解析: mobile stie', async () => {
+    const dmzj = new Dmzj()
     const url = 'https://m.idmzj.com/view/62324/140451.html'
-    const imgList = await getImgList(url)
+    const imgList = await dmzj.getImgList(url)
     expect.soft(imgList).toHaveLength(15)
 
   })

@@ -2,10 +2,12 @@
   "cSpell.words": [
     "Applebot",
     "baozi",
+    "colamanga",
     "dmzj",
     "Epub",
+    "fzmanga",
     "Gener",
+    "manhuagui",
     "plusplus"
-  ],
-  "vitest.commandLine": "npx vitest --test-timeout=900000"
+  ]
 }

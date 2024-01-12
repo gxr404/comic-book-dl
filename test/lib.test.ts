@@ -1,70 +1,10 @@
 import { existsSync, readFileSync, writeFileSync } from 'node:fs'
 import { expect, test, describe } from 'vitest'
-import { saveImg, saveImgList, scanFolder, writeBookInfoFile } from '../src/lib/download'
-import { getUrlFileName, existsMkdir } from '../src/utils'
-import { matchParse } from '../src/lib/parse'
-import * as baoziParse from '../src/lib/parse/baozi'
-import * as dmzjParse from '../src/lib/parse/dmzj'
-
-describe('test saveImgList', () => {
-  test('test download img success', async () => {
-    const imgList = [
-      'https://s1.baozicdn.com/scomic/sishenjingjie-jiubaodairen/0/0-ai3o/1.jpg',
-      'https://s1.baozicdn.com/scomic/sishenjingjie-jiubaodairen/0/0-ai3o/2.jpg',
-      'https://s1.baozicdn.com/scomic/sishenjingjie-jiubaodairen/0/0-ai3o/3.jpg',
-    ]
-    const testDistDir = `${__dirname}/.temp/saveImgList/1`
-    existsMkdir(testDistDir)
-    await saveImgList(testDistDir, imgList)
-    imgList.forEach(url => {
-      expect(existsSync(`${testDistDir}/${getUrlFileName(url)}`)).toBe(true)
-    })
-  })
-  test('has fail image', async () => {
-    const imgList = [
-      'https://s1.baozicdn.com/scomic/sishenjingjie-jiubaodairen/0/0-ai3o/1.jpg',
-      "https://s1.baozicdn.com/scomic/1111"
-    ]
-    const testDistDir = `${__dirname}/.temp/saveImgList/2`
-    existsMkdir(testDistDir)
-    let hasFail = false
-    let failUrl: string[] = []
-    await saveImgList(testDistDir, imgList, function(imgUrl, isSuccess) {
-      if (!isSuccess) {
-        hasFail = true
-        failUrl.push(imgUrl)
-      }
-    })
-    expect.soft(hasFail).toBeTruthy()
-    expect.soft(failUrl).toHaveLength(1)
-    expect.soft(failUrl[0]).toBe(imgList[1])
-  })
-
-  test('return image path list', async() => {
-    const imgList = [
-      'https://s1.baozicdn.com/scomic/sishenjingjie-jiubaodairen/0/0-ai3o/1.jpg',
-      'https://s1.baozicdn.com/scomic/sishenjingjie-jiubaodairen/0/0-ai3o/2.jpg',
-      'https://s1.baozicdn.com/scomic/sishenjingjie-jiubaodairen/0/0-ai3o/3.jpg',
-    ]
-    const testDistDir = `${__dirname}/.temp/saveImgList/3`
-    existsMkdir(testDistDir)
-    const imgPathList = await saveImgList(testDistDir, imgList)
-    expect.soft(imgPathList).toHaveLength(3)
-    expect.soft(imgPathList[0]).toBe('1.jpg')
-    expect.soft(imgPathList[1]).toBe('2.jpg')
-    expect.soft(imgPathList[2]).toBe('3.jpg')
-  })
-})
-
-test('saveImg', async () => {
-  const testDistDir = `${__dirname}/.temp/saveImg`
-
-  existsMkdir(testDistDir)
-  const imgUrl = 'https://s1.baozicdn.com/scomic/sishenjingjie-jiubaodairen/0/0-ai3o/1.jpg'
-  await saveImg(testDistDir, imgUrl)
-  const data = readFileSync(`${testDistDir}/${getUrlFileName(imgUrl)}`)
-  expect(data).toMatchSnapshot()
-})
+import { scanFolder, writeBookInfoFile } from '@/lib/download'
+import { existsMkdir } from '@/utils'
+import { matchParse } from '@/lib/parse'
+import { Baozi } from '@/lib/parse/baozi'
+import { Dmzj } from '@/lib/parse/dmzj'
 
 describe('match parse', () => {
   test('baozi site', async () => {
@@ -72,13 +12,16 @@ describe('match parse', () => {
       'https://cn.baozimh.com/comic/yaoshenji-taxuedongman',
       'https://tw.baozimh.com/comic/yaoshenji-taxuedongman',
       'https://www.baozimh.com/comic/yaoshenji-taxuedongman',
+      'https://cn.fzmanga.com/comic/yaoshenji-taxuedongman',
+      'https://tw.fzmanga.com/comic/yaoshenji-taxuedongman',
+      'https://www.fzmanga.com/comic/yaoshenji-taxuedongman'
     ]
     siteArr.forEach(site => {
       const matchObj = matchParse(site)
       expect.soft(matchObj).not.toBeFalsy()
       if (matchObj) {
-        expect.soft(matchObj.getImgList).toBe(baoziParse.getImgList)
-        expect.soft(matchObj.parseBookInfo).toBe(baoziParse.parseBookInfo)
+        expect.soft(matchObj.getInstance(site)).toBeInstanceOf(Baozi)
+        expect.soft(matchObj.preHandleUrl).toBeTruthy()
       }
     })
   })
@@ -92,8 +35,7 @@ describe('match parse', () => {
       const matchObj = matchParse(site)
       expect.soft(matchObj).not.toBeFalsy()
       if (matchObj) {
-        expect.soft(matchObj.getImgList).toBe(dmzjParse.getImgList)
-        expect.soft(matchObj.parseBookInfo).toBe(dmzjParse.parseBookInfo)
+        expect.soft(matchObj.getInstance(site)).toBeInstanceOf(Dmzj)
       }
     })
   })
@@ -142,7 +84,8 @@ describe('writeBookInfoFile', async () => {
     language: '',
     rawUrl: 'https://www.baozimh.com/comic/sishenjingjie-jiubaodairen'
   }
-  await writeBookInfoFile(bookInfo, testDistDir)
+  const baozi = new Baozi()
+  await writeBookInfoFile(bookInfo, testDistDir, baozi)
   test('exits bookInfo.json', () => {
     expect(existsSync(`${testDistDir}/bookInfo.json`)).toBe(true)
   })

@@ -1,55 +1,12 @@
-import { createWriteStream, writeFileSync } from 'node:fs'
+import { writeFileSync } from 'node:fs'
 import { readdir, stat, readFile } from 'node:fs/promises'
 import { join } from 'node:path'
-import { pipeline } from 'node:stream/promises'
-import got from 'got'
 import pLimit from 'p-limit'
-import { UA, getUrlFileName, notEmpty } from '../utils'
-import { BookInfo } from './parse'
+import { notEmpty } from '@/utils'
+import { Base, BookInfo } from '@/lib/parse/base'
 
-type TSaveImgCallback = (imgUrl: string, isSuccess: boolean) => void
-
-export async function saveImgList(path: string, imgList: string[], saveImgCallback?: TSaveImgCallback) {
-  const limit = pLimit(6)
-  const promiseList = imgList.map(imgUrl => limit(async () => {
-    let isSuccess = true
-    // let imgPath = ''
-    let imgFileName = ''
-    try {
-      imgFileName = await saveImg(path, imgUrl)
-      // imgPath = `${path}/${imgFileName}`
-    } catch(err) {
-      // console.error(`save img Error: ${imgUrl}`)
-      // console.error(err)
-      isSuccess = false
-    }
-    if (typeof saveImgCallback === 'function') saveImgCallback(imgUrl, isSuccess)
-    return imgFileName
-  }))
-  return await Promise.all(promiseList)
-}
-
-export async function saveImg(path: string, imgUrl: string, fixFileName?: string) {
-  if (!imgUrl) return ''
-  let imgName = getUrlFileName(imgUrl) ?? ''
-  imgName = decodeURIComponent(imgName)
-  if (fixFileName) {
-    const suffix = imgName?.split('.')?.[1] ?? 'jpg'
-    imgName = `${fixFileName}.${suffix}`
-  }
-  await pipeline(
-    got.stream(imgUrl, {
-      headers: {
-        'user-agent': UA
-      }
-    }),
-    createWriteStream(`${path}/${imgName}`)
-  )
-  return imgName
-}
-
-export async function writeBookInfoFile(bookInfo: BookInfo, bookDistPath: string) {
-  const coverPicPath = await saveImg(bookDistPath, bookInfo.coverUrl, 'cover')
+export async function writeBookInfoFile(bookInfo: BookInfo, bookDistPath: string, parseInstance: Base) {
+  const coverPicPath = await parseInstance.saveImg(bookDistPath, bookInfo.coverUrl, 'cover')
   bookInfo.coverPath = coverPicPath
   writeFileSync(`${bookDistPath}/bookInfo.json`, JSON.stringify(bookInfo, null, 2))
 }

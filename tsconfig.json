@@ -13,20 +13,11 @@
     "resolveJsonModule": true,
     "paths": {
       "@/*": ["./src/*"],
+      "got": ["./node_modules/got/dist/source"]
     },
-    "outDir": "dist",
-    "declaration": true,
-    "declarationDir": "types",
-    "removeComments": true
   },
   "include": [
-    "src/**/*"
-  ],
-  "ts-node": {
-    "esm": true
-  },
-  "tsc-alias": {
-    "resolveFullPaths": true,
-    "verbose": false
-  }
+    "src/**/*",
+    "test/**/*"
+  ]
 }

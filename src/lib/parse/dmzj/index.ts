@@ -1,50 +1,15 @@
-import got from 'got'
+import got, {Response} from 'got'
 import { load } from 'cheerio'
-import { UA, fixPathName } from '../../../utils'
+
+import { fixPathName } from '@/utils'
+import { Base, BookInfo, ChaptersItem } from '@/lib/parse/base'
 import { ApiV4ChapterImageParse, ApiV4ChapterListParse, ApiV4Decrypt } from './crypto'
-import { ChaptersItem, BookInfo } from '../index'
 
 const api = {
   v4Chapter: 'https://nnv4api.dmzj.com/comic/chapter/',
   v3Chapter: 'https://m.idmzj.com/chapinfo/',
   v3Api: 'https://api.dmzj.com',
   v4Api: 'https://nnv4api.dmzj.com'
-}
-
-function getHeaders() {
-  return {
-    'user-agent': UA
-  }
-}
-
-export async function getImgList(url: string): Promise<string[]> {
-
-  // urlPath = comic_id/id
-  const urlPath = /.*view\/(.*).html/g.exec(url)?.[1]
-  if (!urlPath) return []
-  // https://m.idmzj.com/view/62324/140451.html
-  const response = await got(`${api.v4Chapter}${urlPath}`, {
-    headers: getHeaders()
-  })
-  let imgList: string[] = []
-  try {
-    const data = ApiV4ChapterImageParse(ApiV4Decrypt(response.body))
-    imgList = data?.Images ?? []
-    imgList = imgList.map(img => decodeURIComponent(img))
-  } catch(e) {
-    const response = await got(`${api.v3Chapter}${urlPath}.html`, {
-      headers: getHeaders()
-    })
-    let data: any = {}
-    try {
-      data = JSON.parse(response.body)
-    } catch (e) {
-      console.log(e)
-    }
-    imgList = data['page_url']
-  }
-
-  return imgList
 }
 
 interface MobileTempChapterItem {
@@ -65,79 +30,103 @@ interface PcTempChapterItem {
   chapter_order: number,
   is_fee: boolean
 }
-export async function parseBookInfo(url: string): Promise<BookInfo | false> {
-  const rawUrl = url
 
-  let response: got.Response<string>
-  try {
-    response = await got.get(url, {
-      headers: getHeaders()
+export class Dmzj extends Base {
+  override readonly type = 'Dmzj'
+  async parseBookInfo(): Promise<BookInfo | false> {
+    const url = this.bookUrl
+    const rawUrl = url
+
+    let response: Response<string>
+    try {
+      response = await got.get(url, this.genReqOptions())
+    } catch (e) {
+      return false
+    }
+    if (!response || response.statusCode !== 200) {
+      return false
+    }
+
+    const isMobile = /m\.idmzj/.test(url)
+    let parseResult
+    if (isMobile) {
+      parseResult = this.mSite(url, response.body)
+    } else {
+      parseResult = await this.pcSite(url, response.body)
+    }
+
+    const name = parseResult?.name
+    const author = parseResult?.author
+    const desc = parseResult?.desc
+    const coverUrl = parseResult?.coverUrl
+    let chapters: ChaptersItem[] = parseResult?.chapters || []
+
+    if (!name || chapters.length === 0) {
+      return false
+    }
+    // 章节默认是升序改为降序
+    chapters = chapters.reverse()
+
+    // 生成上一话/下一话信息
+    chapters = chapters.map((item, index) => {
+      const newItem = {...item}
+      if (index !== 0) {
+        newItem.preChapter = {
+          name: chapters[index - 1].name,
+          rawName: chapters[index - 1].rawName,
+          href: chapters[index - 1].href,
+          index: chapters[index - 1].index
+        }
+      }
+      if (index !== chapters.length - 1){
+        newItem.nextChapter = {
+          name: chapters[index + 1].name,
+          rawName: chapters[index + 1].rawName,
+          href: chapters[index + 1].href,
+          index: chapters[index + 1].index
+        }
+      }
+      return newItem
     })
-  } catch (e) {
-    return false
-  }
-  if (!response || response.statusCode !== 200) {
-    return false
-  }
 
-  const isMobile = /m\.idmzj/.test(url)
-  let parseResult
-  if (isMobile) {
-    parseResult = parseRule.mSite(url, response.body)
-  } else {
-    parseResult = await parseRule.pcSite(url, response.body)
-  }
-
-  const name = parseResult?.name
-  const author = parseResult?.author
-  const desc = parseResult?.desc
-  const coverUrl = parseResult?.coverUrl
-  let chapters: ChaptersItem[] = parseResult?.chapters || []
-
-  if (!name || chapters.length === 0) {
-    return false
-  }
-  // 章节默认是升序改为降序
-  chapters = chapters.reverse()
-
-  // 生成上一话/下一话信息
-  chapters = chapters.map((item, index) => {
-    const newItem = {...item}
-    if (index !== 0) {
-      newItem.preChapter = {
-        name: chapters[index - 1].name,
-        rawName: chapters[index - 1].rawName,
-        href: chapters[index - 1].href,
-        index: chapters[index - 1].index
-      }
+    return {
+      name,
+      pathName: fixPathName(name),
+      author,
+      desc,
+      coverUrl,
+      coverPath: '',
+      chapters,
+      url,
+      language: '简体',
+      rawUrl
     }
-    if (index !== chapters.length - 1){
-      newItem.nextChapter = {
-        name: chapters[index + 1].name,
-        rawName: chapters[index + 1].rawName,
-        href: chapters[index + 1].href,
-        index: chapters[index + 1].index
-      }
-    }
-    return newItem
-  })
-
-  return {
-    name,
-    pathName: fixPathName(name),
-    author,
-    desc,
-    coverUrl,
-    coverPath: '',
-    chapters,
-    url,
-    language: '简体',
-    rawUrl
   }
-}
+  async getImgList(url: string): Promise<string[]> {
 
+    // urlPath = comic_id/id
+    const urlPath = /.*view\/(.*).html/g.exec(url)?.[1]
+    if (!urlPath) return []
+    // https://m.idmzj.com/view/62324/140451.html
+    const response = await got(`${api.v4Chapter}${urlPath}`, this.genReqOptions())
+    let imgList: string[] = []
+    try {
+      const data = ApiV4ChapterImageParse(ApiV4Decrypt(response.body))
+      imgList = data?.Images ?? []
+      imgList = imgList.map(img => decodeURIComponent(img))
+    } catch(e) {
+      const response = await got(`${api.v3Chapter}${urlPath}.html`,this.genReqOptions())
+      let data: any = {}
+      try {
+        data = JSON.parse(response.body)
+      } catch (e) {
+        console.log(e)
+      }
+      imgList = data['page_url']
+    }
 
-const parseRule = {
+    return imgList
+  }
   // mobile https://m.idmzj.com/index.html
   mSite(url: string, body: string) {
     const $ = load(body)
@@ -181,26 +170,24 @@ const parseRule = {
       coverUrl,
       chapters,
     }
-  },
+  }
   // pc https://www.idmzj.com/info/yaoshenji.html
   async pcSite(url: string, body: string) {
     const reg = /.*\/(.*?)$/
     const params: any = {}
-    let comicName = url.match(reg)?.[1] || ''
+    let comicName = url.match(reg)?.[1] ?? ''
     comicName = comicName.replace(/\.html/, '')
     params['comic_py'] = comicName
     const api = 'https://www.idmzj.com/api/v1/comic1/comic/detail'
-    const nuxtDataStr = body.match(/window\.__NUXT__=\((.*)\)/gm)?.[0] || ''
+    const nuxtDataStr = body.match(/window\.__NUXT__=\((.*)\)/gm)?.[0] ?? ''
     const fieldGroup = ['channel', 'app_name', 'version', 'timestamp']
     fieldGroup.forEach((field, i) => {
       const fieldReg = new RegExp(`${field}:(.*?),`)
       const key = fieldGroup[i]
-      params[key] = nuxtDataStr.match(fieldReg)?.[1] || ''
+      params[key] = nuxtDataStr.match(fieldReg)?.[1] ?? ''
     })
     const queryStr = new URLSearchParams(params).toString()
-    const response = await got.get(`${api}?${queryStr}`, {
-      headers: getHeaders()
-    })
+    const response = await got.get(`${api}?${queryStr}`, this.genReqOptions())
     let resJSON: any = null
     try {
       resJSON = JSON.parse(response.body)
@@ -221,7 +208,7 @@ const parseRule = {
     let tempChapters: PcTempChapterItem[] = resJSON?.chapterList || []
     if (tempChapters.length <= 0) {
       const comicId = resJSON?.id
-      tempChapters = await parseRule.commonFetchChaptersList(comicId)
+      tempChapters = await this.commonFetchChaptersList(comicId)
     } else {
       tempChapters = tempChapters.map((item: any) => item?.data ?? null)
       tempChapters = tempChapters.flat()
@@ -249,13 +236,13 @@ const parseRule = {
       chapters,
     }
 
-  },
+  }
 
   /** 可公用的 获取章节 前提是需要 comic id */
   async commonFetchChaptersList(id: string) {
     if (!id) return []
     const url = `${api.v4Api}/comic/detail/${id}?uid=2665531`
-    const response = await got.get(url, {headers: getHeaders()})
+    const response = await got.get(url, this.genReqOptions())
     let chapterList: any[] = []
     try {
       const data = ApiV4ChapterListParse(ApiV4Decrypt(response.body))

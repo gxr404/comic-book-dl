@@ -1,6 +1,6 @@
 import { expect, test, describe } from 'vitest'
 import { existsSync } from 'node:fs'
-import { existsMkdir, fixPathName, getUrlFileName } from '../src/utils'
+import { existsMkdir, fixPathName, getUrlFileName } from '@/utils'
 
 describe('test exist mkdir', () => {
   const randNumber = Math.floor(Math.random()*1000000)

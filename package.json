@@ -8,10 +8,10 @@
     "comic-book-dl": "bin/index.js"
   },
   "scripts": {
-    "dev": "tsc && (concurrently \"tsc -w\" \"tsc-alias -w\")",
-    "build": "tsc && tsc-alias",
+    "dev": "tsc -p tsconfig.build.json && (concurrently \"tsc -p tsconfig.build.json -w\" \"tsc-alias -p tsconfig.build.json -w\")",
+    "build": "tsc -p tsconfig.build.json && tsc-alias -p tsconfig.build.json",
     "test": "run-s test:clean test:run",
-    "test:run": "vitest run --test-timeout=900000",
+    "test:run": "vitest run",
     "test:clean": "rimraf test/.temp",
     "eslintLog": "eslint . > eslint.log",
     "clean": "rimraf dist types",
@@ -50,7 +50,6 @@
   },
   "devDependencies": {
     "@types/cli-progress": "^3.11.5",
-    "@types/got": "^9.6.12",
     "@typescript-eslint/eslint-plugin": "^6.15.0",
     "@typescript-eslint/parser": "^6.15.0",
     "concurrently": "^8.2.2",

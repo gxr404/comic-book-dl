@@ -1,25 +1,27 @@
-import * as dmzj from './dmzj/index'
-import * as baozi from './baozi/index'
+import { Dmzj } from '@/lib/parse/dmzj'
+import { Baozi } from '@/lib/parse/baozi'
 
 const ruleMap = [
   {
     /** 包子漫画 */
-    hostRule: /(.*?)baozi(.*?)/,
+    hostRule: /(.*?)baozi(.*?)|(.*?)fzmanga(.*?)/,
     parse: {
-      parseBookInfo: baozi.parseBookInfo,
-      getImgList: baozi.getImgList,
+      getInstance(url: string) {
+        return new Baozi(url)
+      },
       // url预处理
       preHandleUrl(url: string) {
         return url.replace(/tw\.|www\./, 'cn.')
-      }
+      },
     }
   },
   {
     /** 动漫之家 */
     hostRule: /(.*?)dmzj(.*?)/,
     parse: {
-      parseBookInfo: dmzj.parseBookInfo,
-      getImgList: dmzj.getImgList
+      getInstance(url: string) {
+        return new Dmzj(url)
+      },
     }
   }
 ]
@@ -34,39 +36,3 @@ export function matchParse(url: string) {
   return ruleItem.parse
 }
 
-export interface ChaptersItem {
-  name: string,
-  rawName: string,
-  index: number,
-  href: string,
-  imageList: string[],
-  imageListPath: string[]
-  preChapter?: {
-    name: string,
-    href: string,
-    rawName: string,
-    index: number
-  },
-  nextChapter?: {
-    name: string,
-    href: string,
-    rawName: string,
-    index: number
-  },
-  other?: {
-    [key: string]: any
-  }
-}
-
-export interface BookInfo {
-  name: string,
-  pathName: string,
-  author: string,
-  desc: string,
-  coverUrl: string,
-  coverPath: string,
-  chapters: ChaptersItem[],
-  url: string,
-  language: string,
-  rawUrl: string
-}

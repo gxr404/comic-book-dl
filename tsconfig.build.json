@@ -1,0 +1,16 @@
+{
+  "compilerOptions": {
+    "outDir": "dist",
+    "declaration": true,
+    "declarationDir": "types",
+    "removeComments": true
+  },
+  "extends": "./tsconfig.json",
+  "include": [
+    "src/**/*"
+  ],
+  "tsc-alias": {
+    "resolveFullPaths": true,
+    "verbose": false
+  }
+}

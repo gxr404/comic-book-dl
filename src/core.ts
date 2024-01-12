@@ -4,8 +4,8 @@ import ProgressBar from './lib/ProgressBar'
 import type { IProgressItem } from './lib/ProgressBar'
 import { existsMkdir } from './utils'
 import { matchParse } from './lib/parse/index'
-import { saveImgList, writeBookInfoFile } from './lib/download'
-import type { ChaptersItem } from './lib/parse/index'
+import { writeBookInfoFile } from './lib/download'
+import type { ChaptersItem } from './lib/parse/base'
 
 interface RunHooks {
   // 漫画url解析错误
@@ -38,16 +38,18 @@ export interface Config {
 // })
 
 export async function run(config: Config, hooks: RunHooks) {
+
   const match = matchParse(config.targetUrl)
   if (!match) {
     if (hooks.parseErr) hooks.parseErr()
     return
   }
-  const { parseBookInfo, getImgList, preHandleUrl } = match
+  const { preHandleUrl, getInstance } = match
   if (typeof preHandleUrl === 'function') {
     config.targetUrl = preHandleUrl(config.targetUrl)
   }
-  const bookInfo = await parseBookInfo(config.targetUrl)
+  const parseInstance = getInstance(config.targetUrl)
+  const bookInfo = await parseInstance.parseBookInfo()
   if (!bookInfo) {
     if (hooks.parseErr) hooks.parseErr()
     return
@@ -108,21 +110,22 @@ export async function run(config: Config, hooks: RunHooks) {
       const chaptersItemPath = `${bookDistPath}/chapters/${item.name}`
       existsMkdir(chaptersItemPath)
       let getImageListSuccess = true
-      const imageList = await getImgList(item.href).catch(() => {
-        getImageListSuccess = false
-        errorList.push({
-          bookName,
-          chapter: item
+      const imageList = await parseInstance.getImgList(item.href)
+        .catch(() => {
+          getImageListSuccess = false
+          errorList.push({
+            bookName,
+            chapter: item
+          })
+          return [] as string[]
         })
-        return [] as string[]
-      })
       let imageListPath: string[] = []
       const curBar = progressBar.multiBar!.create(imageList.length, 0, {
         file: `下载「${item.name}」中的图片...`
       })
 
       let isAllSuccess = true
-      imageListPath = await saveImgList(
+      imageListPath = await parseInstance.saveImgList(
         chaptersItemPath,
         imageList,
         (imgUrl: string, isSuccess: boolean) => {
@@ -158,7 +161,7 @@ export async function run(config: Config, hooks: RunHooks) {
 
   const isAllSuccess = await Promise.all(promiseList)
 
-  await writeBookInfoFile(bookInfo, bookDistPath)
+  await writeBookInfoFile(bookInfo, bookDistPath, parseInstance)
 
   if (errorList.length > 0) {
     if (hooks.error) hooks.error(bookName, chaptersList, errorList)

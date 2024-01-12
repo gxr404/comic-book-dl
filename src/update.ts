@@ -1,10 +1,10 @@
 import {resolve} from 'node:path'
 import { confirm, checkbox } from '@inquirer/prompts'
-import { run } from './core'
-import { echoErrorMsg } from './index'
-import { logger, notEmpty } from './utils'
-import { scanFolder } from './lib/download'
-import { BookInfo } from './lib/parse'
+import { run } from '@/core'
+import { echoErrorMsg } from '@/index'
+import { logger, notEmpty } from '@/utils'
+import { scanFolder } from '@/lib/download'
+import { BookInfo } from '@/lib/parse/base'
 
 interface Config {
   bookPath: string,

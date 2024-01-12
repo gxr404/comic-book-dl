@@ -1,6 +1,6 @@
 // Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
 
-exports[`saveImg 1`] = `
+exports[`saveImg > normal saveImg 1`] = `
 {
   "data": [
     255,

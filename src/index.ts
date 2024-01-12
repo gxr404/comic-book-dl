@@ -1,8 +1,8 @@
-import { logger } from './utils'
-import type { ChaptersItem } from './lib/parse'
-import { run } from './core'
-import { scanFolder } from './lib/download'
-import type { Config, ErrorChapterItem } from './core'
+import { logger } from '@/utils'
+import { run } from '@/core'
+import { scanFolder } from '@/lib/download'
+import type { Config, ErrorChapterItem } from '@/core'
+import type { ChaptersItem } from '@/lib/parse/base'
 
 interface ChapterErrorMsgItem {
   chapterName: string,

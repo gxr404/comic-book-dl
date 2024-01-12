@@ -1,8 +1,8 @@
 import { readFileSync } from 'node:fs'
 import { cac } from 'cac'
-import { main } from './index'
-import { logger } from './utils'
-import { update } from './update'
+import { main } from '@/index'
+import { logger } from '@/utils'
+import { update } from '@/update'
 
 const cli = cac('comic-book-dl')
 
