@@ -23,7 +23,7 @@ export class Godamanga extends Base {
     let $ = load(response.body)
     let name = $('#info .gap-unit-xs .text-xl').text().trim()
     const _name = $('#info .gap-unit-xs .text-xl .text-xs').text().trim()
-    name = name.replace(_name, '')
+    name = name.replace(_name, '').trim()
     const desc = $('#info .block .text-medium').text().trim()
     const author = $('#info .block div:nth-child(2) a span').text().trim()
     const coverUrl = $('#MangaCard > div > div:nth-child(1) img').attr('src')?.trim() ?? ''
