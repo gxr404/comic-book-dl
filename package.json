@@ -1,6 +1,6 @@
 {
   "name": "comic-book-dl",
-  "version": "0.0.25",
+  "version": "0.0.26",
   "description": "漫画下载器",
   "main": "dist/index.js",
   "types": "types/index.d.ts",
