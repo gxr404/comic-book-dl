@@ -100,5 +100,4 @@ function echoErrorMsg(
   for (const errInfo of errChaptersMsg) {
     logger.error(`  └── ✕ ${errInfo.chapterName}`)
   }
-  logger.error('o(╥﹏╥)o 由于网络波动或链接失效以上下载失败，可重新执行命令重试(PS:不会影响已下载成功的数据)')
 }
