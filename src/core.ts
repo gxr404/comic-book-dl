@@ -29,7 +29,8 @@ export interface ErrorChapterItem {
 
 export interface Config {
   bookPath: string,
-  targetUrl: string;
+  targetUrl: string,
+  ignoreConsole?: boolean
 }
 
 // process.on('warning', e => {
@@ -60,12 +61,11 @@ export async function run(config: Config, hooks: RunHooks) {
   existsMkdir(bookDistPath)
 
   const total = bookInfo.chapters.length
-  const progressBar = new ProgressBar(bookDistPath, total)
+  const progressBar = new ProgressBar(bookDistPath, total, config.ignoreConsole)
   await progressBar.init()
 
   // 已完成 无需再继续
   if (progressBar.curr === total) {
-    if (progressBar.bar) progressBar.bar.stop()
     if (hooks.success) hooks.success(bookName, bookDistPath, null)
     return
   }
@@ -120,7 +120,8 @@ export async function run(config: Config, hooks: RunHooks) {
           return [] as string[]
         })
       let imageListPath: string[] = []
-      const curBar = progressBar.multiBar!.create(imageList.length, 0, {
+      const curBar = progressBar.multiBarCreate({
+        total: imageList.length,
         file: `下载「${item.name}」中的图片...`
       })
 
@@ -137,7 +138,7 @@ export async function run(config: Config, hooks: RunHooks) {
               chapter: item
             })
           }
-          curBar.increment()
+          progressBar.multiBarUpdate(curBar)
         }
       )
       imageListPath = imageListPath.map((itemPath) => {
@@ -145,7 +146,7 @@ export async function run(config: Config, hooks: RunHooks) {
       })
       item.imageList = imageList
       item.imageListPath = imageListPath
-      progressBar.multiBar!.remove(curBar)
+      progressBar.multiBarRemove(curBar)
       await progressBar.updateProgress({
         name: item.name,
         rawName: item.rawName,

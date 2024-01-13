@@ -1,5 +1,5 @@
 import fs from 'node:fs/promises'
-import cliProgress from 'cli-progress'
+import cliProgress, { SingleBar } from 'cli-progress'
 import { rimraf } from 'rimraf'
 
 export interface IProgressItem {
@@ -24,11 +24,14 @@ export default class ProgressBar {
   multiBar: cliProgress.MultiBar | null = null
   bar: cliProgress.SingleBar | null = null
   completePromise: Promise<void> | null = null
+  /** 忽略打印(如果忽略打印则 bar multiBar 一直为null) */
+  ignoreConsole: boolean = false
 
-  constructor (bookPath: string, total: number) {
+  constructor (bookPath: string, total: number, ignoreConsole: boolean = false) {
     this.bookPath = bookPath
     this.progressFilePath = `${bookPath}/progress.json`
     this.total = total
+    this.ignoreConsole = ignoreConsole
   }
 
   async init() {
@@ -38,6 +41,8 @@ export default class ProgressBar {
     if (this.curr === this.total) return
 
     this.isDownloadInterrupted = this.curr > 0 && this.curr !== this.total
+
+    if (this.ignoreConsole) return
 
     this.multiBar = new cliProgress.MultiBar({
       format: ' {bar} | {file} | {value}/{total}',
@@ -104,7 +109,7 @@ export default class ProgressBar {
         })
       })
       this.progressInfo = updateProgressInfo
-      this.bar!.update(updateProgressInfo.length)
+      if (this.bar) this.bar.update(updateProgressInfo.length)
       this.curr = updateProgressInfo.length
       // 删除已下载但已经不符合最新漫画目录的文件夹
       const promiseList = needDeleteList.map(needDel => {
@@ -113,6 +118,21 @@ export default class ProgressBar {
       await Promise.all(promiseList)
     }
 
+  }
+
+  multiBarCreate(params: {total: number, file: string}) {
+    if (this.ignoreConsole) return
+    return this.multiBar?.create(params.total, 0, {
+      file: params.file
+    })
+  }
+
+  multiBarUpdate(curBar: SingleBar | undefined) {
+    if (curBar) curBar.increment()
+  }
+
+  multiBarRemove(curBar: SingleBar| undefined) {
+    if (curBar) this.multiBar?.remove(curBar)
   }
 
   // 暂停进度条的打印

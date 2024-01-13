@@ -40,7 +40,8 @@ cli
     try {
       await main({
         targetUrl: url,
-        bookPath: options.distPath
+        bookPath: options.distPath,
+        ignoreConsole: false
       })
     } catch (err) {
       console.log(err)

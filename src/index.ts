@@ -45,19 +45,26 @@ export async function main(config: Config) {
     return bookInfo.rawUrl === config.targetUrl
   })
   if (existedBookInfo) config.targetUrl = existedBookInfo.url
-
+  const {ignoreConsole} = config
   await run(config, {
     parseErr() {
+      if (ignoreConsole) return
       logger.error('× 请输入正确的url... o(╥﹏╥)o')
     },
     start(bookName) {
+      if (ignoreConsole) return
       logger.info(`开始下载 《${bookName}》`)
     },
     downloadInterrupted() {
+      if (ignoreConsole) return
       logger.info('根据上次数据继续断点下载')
     },
-    error: echoErrorMsg,
+    error(...args) {
+      if (ignoreConsole) return
+      echoErrorMsg.apply(this, args)
+    },
     success(bookName, bookDistPath) {
+      if (ignoreConsole) return
       logger.info(`√ 已完成: ${bookDistPath}`)
       logger.info('(つ•̀ω•́)つ 欢迎star: https://github.com/gxr404/comic-book-dl')
     }
