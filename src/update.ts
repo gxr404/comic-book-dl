@@ -1,9 +1,10 @@
 import {resolve} from 'node:path'
 import { confirm, checkbox } from '@inquirer/prompts'
-import { ErrorChapterItem, run } from '@/core'
+import { run } from '@/core'
 import { logger, notEmpty } from '@/utils'
 import { scanFolder } from '@/lib/download'
-import type { BookInfo, ChaptersItem } from '@/lib/parse/base'
+import {echoErrorMsg} from '@/index'
+import type { BookInfo } from '@/lib/parse/base'
 
 interface Config {
   bookPath: string,
@@ -58,7 +59,9 @@ async function updateRun(bookInfo: BookInfo, bookDistPath: string) {
     start(bookName) {
       logger.info(`开始更新 《${bookName}》`)
     },
-    error: echoErrorMsg,
+    error: (...args) => {
+      echoErrorMsg(...args)
+    },
     success(bookName, bookDistPath, chaptersList) {
       if (!chaptersList) {
         logger.info(`《${bookName}》已是最新, 无需更新`)
@@ -69,35 +72,4 @@ async function updateRun(bookInfo: BookInfo, bookDistPath: string) {
       })
     }
   })
-}
-
-interface ChapterErrorMsgItem {
-  chapterName: string,
-  imgList: string[]
-}
-
-function echoErrorMsg(
-  bookName: string,
-  chaptersList: ChaptersItem[],
-  errorList: ErrorChapterItem[]
-) {
-  const errChaptersMsg: ChapterErrorMsgItem[] = []
-  errorList.forEach((item)=>{
-    const errChapter = errChaptersMsg.find(msg => {
-      return msg.chapterName === item.chapter.name
-    })
-    if (errChapter && item.imgUrl) {
-      errChapter.imgList.push(item.imgUrl)
-    } else {
-      errChaptersMsg.push({
-        chapterName: item.chapter.name,
-        imgList: item.imgUrl ? [item.imgUrl] : []
-      })
-    }
-  })
-
-  logger.error(`《${bookName}》本次执行总数${chaptersList.length}话，✕ 失败${errChaptersMsg.length}话`)
-  for (const errInfo of errChaptersMsg) {
-    logger.error(`  └── ✕ ${errInfo.chapterName}`)
-  }
 }
