@@ -2,6 +2,22 @@
 
 - [包子漫画](https://cn.baozimh.com/)-- [其他域名](https://cn.fzmanga.com)
 
+<!-- "cn.baozimh.com",
+"tw.baozimh.com",
+"www.baozimh.com",
+"cn.webmota.com",
+"tw.webmota.com",
+"www.webmota.com",
+"cn.kukuc.co",
+"tw.kukuc.co",
+"www.kukuc.co",
+"cn.czmanga.com",
+"tw.czmanga.com",
+"www.czmanga.com",
+"cn.dinnerku.com",
+"tw.dinnerku.com",
+"www.dinnerku.com", -->
+
   ```bash
   comic-book-dl "https://cn.baozimh.com/comic/mengoushia-feiniaocheng"
   ```
@@ -23,4 +39,11 @@
 
   ```bash
   comic-book-dl "https://cn.baozimh.one/manga/bianfuxiaqunyinghuiv3"
+  ```
+
+- [Ikuku](https://m.ikuku.cc)
+  - [另一个域名](http://mh123.dypro.xyz/)
+
+  ```bash
+  comic-book-dl "http://mh123.dypro.xyz/comiclist/2262/"
   ```

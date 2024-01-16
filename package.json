@@ -2,6 +2,23 @@
   "name": "comic-book-dl",
   "version": "0.0.28",
   "description": "漫画下载器",
+  "keywords": [
+    "manga",
+    "comic",
+    "nodejs",
+    "download",
+    "comic-dl",
+    "comic-book-dl",
+    "comic-downloader",
+    "cli"
+  ],
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/gxr404/comic-book-dl.git"
+  },
+  "license": "ISC",
+  "author": "gxr404",
+  "type": "module",
   "main": "dist/index.js",
   "types": "types/index.d.ts",
   "bin": {
@@ -17,23 +34,8 @@
     "clean": "rimraf dist types",
     "np": "np",
     "release": "run-s clean build np",
-    "postinstall": "patch-package"
-  },
-  "keywords": [
-    "manga",
-    "comic",
-    "nodejs",
-    "download",
-    "comic-dl",
-    "comic-book-dl",
-    "comic-downloader",
-    "cli"
-  ],
-  "author": "gxr404",
-  "license": "ISC",
-  "repository": {
-    "type": "git",
-    "url": "git+https://github.com/gxr404/comic-book-dl.git"
+    "postinstall": "patch-package",
+    "sort-package-json": "npx sort-package-json"
   },
   "dependencies": {
     "@inquirer/prompts": "^3.3.0",
@@ -59,15 +61,14 @@
     "typescript": "^5.3.3",
     "vitest": "^1.1.0"
   },
-  "overrides": {
-    "@types/cacheable-request": "8.3.1"
-  },
-  "type": "module",
   "engines": {
     "node": ">=16.14.0"
   },
   "np": {
     "tests": true,
     "2fa": false
+  },
+  "overrides": {
+    "@types/cacheable-request": "8.3.1"
   }
 }

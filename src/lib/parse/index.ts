@@ -2,6 +2,7 @@ import { Dmzj } from '@/lib/parse/dmzj'
 import { Baozi } from '@/lib/parse/baozi'
 import { Baimangu } from '@/lib/parse/baimangu'
 import { Godamanga } from '@/lib/parse/godamanga'
+import { Ikuku } from './ikuku'
 
 const ruleMap = [
   {
@@ -43,6 +44,18 @@ const ruleMap = [
         return new Baimangu(url)
       }
     }
+  },
+  {
+    /** ikuku */
+    hostArr: [
+      'mh123.dypro.xyz',
+      'm.ikuku.cc'
+    ],
+    parse: {
+      getInstance(url: string) {
+        return new Ikuku(url)
+      }
+    }
   }
 ]
 
@@ -50,7 +63,12 @@ export function matchParse(url: string) {
   if (!url) return false
   const { host } = new URL(url)
   const ruleItem = ruleMap.find((item) => {
-    return item.hostRule.test(host)
+    if (item.hostRule) {
+      return item.hostRule.test(host)
+    } else if (item.hostArr) {
+      return item.hostArr.includes(host)
+    }
+    return false
   })
   if (!ruleItem) return false
   return ruleItem.parse
