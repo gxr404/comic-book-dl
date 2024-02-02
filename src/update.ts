@@ -57,7 +57,8 @@ async function updateRun(bookInfo: BookInfo, bookDistPath: string) {
     targetUrl: bookInfo.url
   }, {
     parseErr() {
-      logger.error(`× 《${bookInfo.name}》解析失败, 请查看 ${bookInfo.url} 是否正常访问`)
+      logger.error(`《${bookInfo.name}》解析失败`)
+      logger.error(`  └── × 请查看 ${bookInfo.url} 是否正常访问`)
     },
     start(bookName) {
       logger.info(`开始更新 《${bookName}》`)
