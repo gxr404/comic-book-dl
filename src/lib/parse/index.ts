@@ -2,7 +2,7 @@ import { Dmzj } from '@/lib/parse/dmzj'
 import { Baozi } from '@/lib/parse/baozi'
 import { Baimangu } from '@/lib/parse/baimangu'
 import { Godamanga } from '@/lib/parse/godamanga'
-import { Ikuku } from './ikuku'
+import { Ikuku } from '@/lib/parse/ikuku'
 
 const ruleMap = [
   {

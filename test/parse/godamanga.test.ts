@@ -1,9 +1,6 @@
-import path from 'node:path'
-import { readFileSync } from 'fs'
 import { expect, test, describe } from 'vitest'
 import type { BookInfo } from '@/lib/parse/base'
 import { Godamanga } from '@/lib/parse/godamanga'
-import { existsMkdir } from '@/utils'
 
 describe('parseBookInfo', () => {
   test('parseBookInfo正常解析 baozi.one', async () => {
@@ -29,7 +26,7 @@ describe('parseBookInfo', () => {
     expect.soft(bookInfo.author).toBeTruthy()
     expect.soft(bookInfo.coverUrl).toBeTruthy()
     expect.soft(bookInfo.desc).toBeTruthy()
-    expect.soft(bookInfo.chapters).toHaveLength(8)
+    expect.soft(bookInfo.chapters).toHaveLength(9)
   })
   // 需科学上网 跳过该测试
   test.skip('parseBookInfo正常解析 godamanga.com', async () => {

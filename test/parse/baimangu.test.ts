@@ -1,9 +1,6 @@
-import path from 'node:path'
-import { readFileSync } from 'fs'
 import { expect, test, describe } from 'vitest'
 import type { BookInfo } from '@/lib/parse/base'
 import { Baimangu } from '@/lib/parse/baimangu'
-import { existsMkdir, getUrlFileName } from '@/utils'
 
 describe('parseBookInfo', () => {
   test('parseBookInfo正常解析', async () => {

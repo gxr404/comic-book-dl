@@ -33,7 +33,7 @@ export async function update(config: Config) {
       choices: [
         ...bookChoices
       ],
-      pageSize: 99,
+      pageSize: 20,
       required: true,
       loop: false
     })
@@ -56,6 +56,9 @@ async function updateRun(bookInfo: BookInfo, bookDistPath: string) {
     bookPath: bookDistPath,
     targetUrl: bookInfo.url
   }, {
+    parseErr() {
+      logger.error(`× 《${bookInfo.name}》解析失败, 请查看 ${bookInfo.url} 是否正常访问`)
+    },
     start(bookName) {
       logger.info(`开始更新 《${bookName}》`)
     },

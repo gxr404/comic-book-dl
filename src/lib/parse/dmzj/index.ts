@@ -1,7 +1,7 @@
 import got, {Response} from 'got'
 import { load } from 'cheerio'
 
-import { fixPathName } from '@/utils'
+import { UA, fixPathName } from '@/utils'
 import { Base } from '@/lib/parse/base'
 import type { BookInfo, ChaptersItem } from '@/lib/parse/base'
 import { ApiV4ChapterImageParse, ApiV4ChapterListParse, ApiV4Decrypt } from './crypto'
@@ -42,6 +42,7 @@ export class Dmzj extends Base {
     try {
       response = await got.get(url, this.genReqOptions())
     } catch (e) {
+      // console.log(e)
       return false
     }
     if (!response || response.statusCode !== 200) {
@@ -55,7 +56,7 @@ export class Dmzj extends Base {
     } else {
       parseResult = await this.pcSite(url, response.body)
     }
-
+    if (!parseResult) return false
     const name = parseResult?.name
     const author = parseResult?.author
     const desc = parseResult?.desc
@@ -104,7 +105,6 @@ export class Dmzj extends Base {
     }
   }
   async getImgList(url: string): Promise<string[]> {
-
     // urlPath = comic_id/id
     const urlPath = /.*view\/(.*).html/g.exec(url)?.[1]
     if (!urlPath) return []
@@ -142,7 +142,8 @@ export class Dmzj extends Base {
     try {
       tempChapters = JSON.parse(chaptersJSONstr)
     } catch (e) {
-      console.log(e)
+      // console.log(e)
+      return null
     }
     if (!Array.isArray(tempChapters)) tempChapters = []
     tempChapters = tempChapters.map((item: any) => item?.data ?? null)
@@ -195,6 +196,7 @@ export class Dmzj extends Base {
       resJSON = resJSON?.data?.comicInfo || {}
     } catch (e) {
       console.log(e)
+      return null
     }
     // const $ = load(body)
     // const name = $('.comic_deCon > h1 > a').text().trim()
@@ -262,5 +264,14 @@ export class Dmzj extends Base {
       return []
     }
     return chapterList.reverse()
+  }
+
+  override genReqOptions() {
+    return {
+      headers: {
+        'user-agent': UA
+      },
+      http2: true
+    }
   }
 }

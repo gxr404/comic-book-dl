@@ -17,7 +17,7 @@ const { version } = JSON.parse(
 )
 
 cli.command('update', '更新已下载的漫画')
-  .option('-d, --distPath <dir>', '下载的目录 eg: -d comic-book', {
+  .option('-d, --distPath <dir>', '下载的目录 eg: -d /xx/comic-book', {
     default: 'comic-book',
   })
   .action(async (options: IOptions) => {

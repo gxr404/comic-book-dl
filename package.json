@@ -42,7 +42,7 @@
     "cac": "^6.7.14",
     "cheerio": "^1.0.0-rc.12",
     "cli-progress": "3.12.0",
-    "got": "^14.0.0",
+    "got": "11.8.6",
     "log4js": "^6.9.1",
     "p-limit": "^5.0.0",
     "patch-package": "^8.0.0",
@@ -67,8 +67,5 @@
   "np": {
     "tests": true,
     "2fa": false
-  },
-  "overrides": {
-    "@types/cacheable-request": "8.3.1"
   }
 }
