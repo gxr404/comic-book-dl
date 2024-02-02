@@ -42,8 +42,8 @@
   ```
 
 - [Ikuku](https://m.ikuku.cc)
-  - [另一个域名](http://mh123.dypro.xyz/)
+  <!-- - [另一个域名](http://mh123.dypro.xyz/) -->
 
   ```bash
-  comic-book-dl "http://mh123.dypro.xyz/comiclist/2262/"
+  comic-book-dl "https://m.ikuku.cc/comiclist/2262/"
   ```
