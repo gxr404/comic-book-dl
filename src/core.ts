@@ -27,10 +27,19 @@ export interface ErrorChapterItem {
   chapter:  ChaptersItem
 }
 
+interface IgnoreBook {
+  name: string,
+  chapter?: string[]
+}
+
+export interface UserConfig {
+  ignore?: IgnoreBook[]
+}
 export interface Config {
   bookPath: string,
   targetUrl: string,
-  ignoreConsole?: boolean
+  ignoreConsole?: boolean,
+  userConfig?: UserConfig
 }
 
 // process.on('warning', e => {
@@ -39,7 +48,6 @@ export interface Config {
 // })
 
 export async function run(config: Config, hooks: RunHooks) {
-
   const match = matchParse(config.targetUrl)
   if (!match) {
     if (hooks.parseErr) hooks.parseErr()
@@ -70,9 +78,29 @@ export async function run(config: Config, hooks: RunHooks) {
     return
   }
 
+  let chaptersList = bookInfo.chapters
+
+  // 存在用户配置 忽略本漫画的某些章节
+  if (config.userConfig?.ignore) {
+    const ignoreInfo = config.userConfig?.ignore.find(item => item.name === bookName)
+    if (ignoreInfo) {
+      const ignoreChapter = ignoreInfo.chapter ?? []
+      chaptersList = chaptersList.filter(chaptersItem => {
+        return !ignoreChapter.includes(chaptersItem.name)
+      })
+      // 已完成 无需再继续
+      if (progressBar.curr === total - ignoreChapter.length) {
+        if (hooks.success) {
+          progressBar.bar?.stop()
+          hooks.success(bookName, bookDistPath, null)
+        }
+        return
+      }
+    }
+  }
+
   if (hooks.start) hooks.start(bookName)
 
-  let chaptersList = bookInfo.chapters
 
   // 下载中断 重新获取下载进度数据
   if (progressBar.isDownloadInterrupted) {

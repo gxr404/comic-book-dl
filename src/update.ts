@@ -1,8 +1,8 @@
 import {resolve} from 'node:path'
 import { confirm, checkbox } from '@inquirer/prompts'
-import { run } from '@/core'
+import { UserConfig, run } from '@/core'
 import { logger, notEmpty } from '@/utils'
-import { scanFolder } from '@/lib/download'
+import { readConfig, scanFolder } from '@/lib/download'
 import {echoErrorMsg} from '@/index'
 import type { BookInfo } from '@/lib/parse/base'
 
@@ -13,6 +13,25 @@ interface Config {
 export async function update(config: Config) {
   const bookDistPath = resolve(String(config.bookPath))
   let bookInfoList = await scanFolder(bookDistPath)
+  const userConfig = await readConfig(bookDistPath)
+  if (userConfig.ignore) {
+    const ignoreBook: string[] = []
+    logger.warn('已读取用户配置: ')
+    userConfig.ignore.forEach(item => {
+      // 只存在漫画名 不存在章节 则代表 整本漫画 忽略
+      if (!item.chapter) {
+        ignoreBook.push(item.name)
+        logger.warn(`└── 《${item.name}》 忽略更新整本漫画`)
+      } else {
+        logger.warn(`└── 《${item.name}》 忽略更新部分章节`)
+        item.chapter.forEach((chapterName) => {
+          logger.warn(`    └── ${chapterName}`)
+        })
+      }
+    })
+    bookInfoList = bookInfoList.filter(bookInfo => !ignoreBook.includes(bookInfo.name))
+  }
+
   if (bookInfoList.length === 0) {
     logger.info(`无法更新, 目录(${bookDistPath})不存在漫画`)
     return
@@ -45,16 +64,17 @@ export async function update(config: Config) {
   }
 
   for (const bookInfo of bookInfoList) {
-    await updateRun(bookInfo, bookDistPath)
+    await updateRun(bookInfo, bookDistPath, userConfig)
   }
 
   logger.info('(つ•̀ω•́)つ 欢迎star: https://github.com/gxr404/comic-book-dl')
 }
 
-async function updateRun(bookInfo: BookInfo, bookDistPath: string) {
+async function updateRun(bookInfo: BookInfo, bookDistPath: string, userConfig: UserConfig ) {
   return run({
     bookPath: bookDistPath,
-    targetUrl: bookInfo.url
+    targetUrl: bookInfo.url,
+    userConfig
   }, {
     parseErr() {
       logger.error(`《${bookInfo.name}》解析失败`)

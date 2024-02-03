@@ -5,6 +5,7 @@ import pLimit from 'p-limit'
 import { notEmpty } from '@/utils'
 import { Base } from '@/lib/parse/base'
 import type { BookInfo } from '@/lib/parse/base'
+import { UserConfig } from '@/core'
 
 export async function writeBookInfoFile(bookInfo: BookInfo, bookDistPath: string, parseInstance: Base) {
   const coverPicPath = await parseInstance.saveImg(bookDistPath, bookInfo.coverUrl, 'cover')
@@ -37,4 +38,14 @@ export async function scanFolder(distPath: string) {
   })
   const bookInfoList = await Promise.all(promiseList)
   return bookInfoList.filter(notEmpty)
+}
+
+export async function readConfig(distPath: string) {
+  try {
+    const configStr = await readFile(`${distPath}/config.json`, {encoding: 'utf-8'})
+    const config: UserConfig = JSON.parse(configStr)
+    return config
+  } catch (e) {
+    return {}
+  }
 }
