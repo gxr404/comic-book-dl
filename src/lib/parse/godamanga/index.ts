@@ -34,7 +34,8 @@ export class Godamanga extends Base {
 
     // 如果有全部章节则 点击，没有则直接在当前页取 因为章节太少的可能会没有全部章节页
     if (chaptersAllUrl) {
-      const res = await got.get(`${origin}/${chaptersAllUrl}`, this.genReqOptions())
+      const chaptersAllHref = new URL(chaptersAllUrl, origin).href
+      const res = await got.get(chaptersAllHref, this.genReqOptions()).catch(() => ({body: ''}))
       $ = load(res.body)
     }
     const chaptersElSelector = chaptersAllUrl ?
