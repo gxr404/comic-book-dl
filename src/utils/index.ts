@@ -38,3 +38,8 @@ export function sleep(seconds: number) {
     }, seconds)
   })
 }
+
+export function isHasHost(url: string) {
+  const reg = /^(http(s):\/\/)?.*\..*\//g
+  return reg.test(url)
+}

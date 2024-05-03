@@ -50,7 +50,8 @@ const ruleMap = [
     hostArr: [
       'mh123.dypro.xyz',
       'm.ikuku.cc',
-      'wap.ikuku.cc'
+      'wap.ikuku.cc',
+      'm.ikukudm.cc'
     ],
     parse: {
       getInstance(url: string) {

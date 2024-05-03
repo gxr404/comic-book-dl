@@ -2,7 +2,7 @@ import got, {Response} from 'got'
 import { load } from 'cheerio'
 import pLimit from 'p-limit'
 import { Base } from '@/lib/parse/base'
-import { fixPathName, sleep, toReversed } from '@/utils'
+import { fixPathName, isHasHost, sleep, toReversed } from '@/utils'
 import type { BookInfo, ChaptersItem, TSaveImgCallback } from '@/lib/parse/base'
 
 export class Ikuku extends Base {
@@ -96,10 +96,11 @@ export class Ikuku extends Base {
     k0910k: 'http://bili2.iqiqu.xyz/',
   }
   async getImgList(chapterUrl: string): Promise<string[]> {
-    const response = await got(chapterUrl, this.genReqOptions())
+    const {origin} = new URL(this.bookUrl)
+    const reqUrl = isHasHost(chapterUrl) ? chapterUrl : `${origin}${chapterUrl}`
+    const response = await got(reqUrl, this.genReqOptions())
     const decoder = new TextDecoder('gbk')
     const bodyStr = decoder.decode(response.rawBody)
-    const {origin} = new URL(chapterUrl)
     const reg = /document\.write\("<a href='(.*?)'><IMG SRC='(.*?)'>/g
     const [, nextImgUrlPath, tempCurImgPath ] = reg.exec(bodyStr) ?? []
     if (!nextImgUrlPath || !tempCurImgPath) return []
