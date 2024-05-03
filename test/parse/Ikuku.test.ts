@@ -41,7 +41,7 @@ describe('parseBookInfo', () => {
 
 describe('getImgList', () => {
   test('getImgList正常解析', async () => {
-    const ikuku = new Ikuku()
+    const ikuku = new Ikuku('https://m.ikuku.cc/comiclist/42434')
     const url = 'http://m.ikuku.cc/comiclist/4/112706/1.htm'
     const imgList = await ikuku.getImgList(url)
     expect.soft(imgList).toHaveLength(15)

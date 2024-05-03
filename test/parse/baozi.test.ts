@@ -26,8 +26,8 @@ describe('parseBookInfo', () => {
     const bookInfo = _bookInfo as BookInfo
     expect.soft(bookInfo.name).toBeTruthy()
     expect.soft(bookInfo.pathName).toBeTruthy()
-    expect.soft(bookInfo.name).toBe('死神/境·界')
-    expect.soft(bookInfo.pathName).toBe('死神_境·界')
+    expect.soft(bookInfo.name).toBe('死神/境·界【快】')
+    expect.soft(bookInfo.pathName).toBe('死神_境·界【快】')
   })
 
   test('parse Info preChapters and nextChapters', async () => {

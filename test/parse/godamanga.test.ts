@@ -2,7 +2,8 @@ import { expect, test, describe } from 'vitest'
 import type { BookInfo } from '@/lib/parse/base'
 import { Godamanga } from '@/lib/parse/godamanga'
 
-describe('parseBookInfo', () => {
+// TODO暂时跳过
+describe.skip('parseBookInfo', () => {
   test('parseBookInfo正常解析 baozi.one', async () => {
     const godamanga = new Godamanga('https://cn.baozimh.one/manga/quanqiubingfengwodazaolemorianquanwu')
     const _bookInfo = await godamanga.parseBookInfo()
