@@ -91,7 +91,10 @@ export class Baozi extends Base {
 
     // 没有全部章节 尝试取最新章节(新上架的漫画仅有 最新章节， 没有全部章节)
     if (chapters.length === 0) {
-      const chaptersEl = $('#layout > div.comics-detail > div:nth-child(3) > div > div:nth-child(4) a.comics-chapters__item')
+      let chaptersEl = $('#layout > div.comics-detail > div:nth-child(3) > div > div:nth-child(4) a.comics-chapters__item')
+      if (chaptersEl.length === 0) {
+        chaptersEl = $('#layout > div.comics-detail > div:nth-child(3) > div .comics-chapters > a.comics-chapters__item')
+      }
       chaptersEl.toArray().forEach((el: any, index: number) => {
         const target = $(el)
         const name = target.find('span').text().trim()
