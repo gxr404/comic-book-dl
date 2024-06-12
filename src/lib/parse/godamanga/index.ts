@@ -3,6 +3,7 @@ import { load } from 'cheerio'
 import pLimit from 'p-limit'
 import { Base } from '@/lib/parse/base'
 import { fixPathName, sleep } from '@/utils'
+import { UA } from '@/utils'
 import type { BookInfo, ChaptersItem, TSaveImgCallback } from '@/lib/parse/base'
 
 export class Godamanga extends Base {
@@ -39,13 +40,29 @@ export class Godamanga extends Base {
       $ = load(res.body)
     }
     const chaptersElSelector = chaptersAllUrl ?
-      '#chapterlists .chapteritem' :
+      '#allchapters' :
       '.peer-checked\\:block #chapterlists .chapteritem'
     const chaptersEl =  $(chaptersElSelector)
-    chaptersEl.toArray().forEach((el: any, index: number) => {
-      const target = $(el)
-      const name = target.find('.chaptertitle').text().trim()
-      const href = target.find('a').attr('href')?.trim() ?? ''
+    const mid = chaptersEl.data('mid')
+    if (!mid) return false
+    let chaptersList = [] as any
+    let chaptersHrefPrefix = ''
+    try {
+      const chaptersAPI = `https://api-get.mgsearcher.com/api/manga/get?mid=${mid}&mode=all`
+      const response = await got.get(chaptersAPI, this.genReqOptions())
+      const data = JSON.parse(response.body)
+      if (data.status && Array.isArray(data?.data?.chapters)) {
+        chaptersList = data?.data?.chapters
+        chaptersHrefPrefix = `/manga/${data?.data?.slug}`
+      }
+    } catch (e) {
+      return false
+    }
+
+    chaptersList.forEach((data: any, index: number) => {
+      const name = data?.attributes?.title?.trim() || ''
+      const slug = data?.attributes?.slug?.trim() || ''
+      const href = `${chaptersHrefPrefix}/${slug}`
       chapters.push({
         name: `${index}_${fixPathName(name)}`,
         rawName: name,
@@ -55,7 +72,6 @@ export class Godamanga extends Base {
         index
       })
     })
-
     if (!name || chapters.length === 0) {
       return false
     }
@@ -81,7 +97,6 @@ export class Godamanga extends Base {
       }
       return newItem
     })
-
     return {
       name,
       pathName: fixPathName(name),
@@ -98,12 +113,21 @@ export class Godamanga extends Base {
   async getImgList(chapterUrl: string): Promise<string[]> {
     const response = await got(chapterUrl, this.genReqOptions())
     const $ = load(response.body)
-
-    const imgListEl = $('section .container .touch-manipulation .w-full.h-full img')
-
-    const imgList = imgListEl.toArray().map((el: any) => {
-      return $(el).attr('data-src') ?? $(el).attr('src') ?? ''
-    })
+    const domInfo = $('#chapterContent')
+    const mid = domInfo.data('ms')
+    const cid = domInfo.data('cs')
+    let imgList: string[] = []
+    try {
+      const chaptersAPI = `https://api-get.mgsearcher.com/api/chapter/getinfo?m=${mid}&c=${cid}`
+      const response = await got.get(chaptersAPI, this.genReqOptions())
+      const data = JSON.parse(response.body)
+      if (data?.status && Array.isArray(data?.data?.info?.images)) {
+        imgList = data?.data?.info?.images.map((item: any) => item?.url || '')
+      }
+    } catch (e) {
+      console.log(e)
+      return []
+    }
     return [...new Set(imgList)]
   }
 
@@ -134,5 +158,14 @@ export class Godamanga extends Base {
     const res = await super.saveImg(path, imgUrl, fixFileName, fixSuffix)
     await sleep(600)
     return res
+  }
+
+  override genReqOptions() {
+    return {
+      headers: {
+        'user-agent': UA,
+        referer: 'https://m.baozimh.one/'
+      },
+    }
   }
 }
