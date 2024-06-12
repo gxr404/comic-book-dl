@@ -108,11 +108,9 @@ export class Ikuku extends Base {
         const response = await got.get(`${origin}${scriptUrl}`, this.genReqOptions())
         imgHostString = imgHostString + '\n' + response.body
       }
-      console.log('imgHostString ====> ', imgHostString)
     }
     if (imgHostString) {
       const matchArr = imgHostString.match(/\{(.*?)='(.*?)';\}/g)
-      console.log(matchArr)
       matchArr?.forEach(item => {
         const [, key, value] = /\{(.*?)='(.*?)';\}/.exec(item) || []
         if (key && value) {
