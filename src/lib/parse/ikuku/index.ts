@@ -85,16 +85,6 @@ export class Ikuku extends Base {
     }
   }
 
-  imgHostMap: {[key: string]: string} = {
-    m200911d: 'http://tu222.iqiqu.xyz/',
-    m201001d: 'http://tu222.iqiqu.xyz/',
-    m201304d: 'http://tu222.iqiqu.xyz/',
-    m2007: 'http://tu222.iqiqu.xyz/',
-    server0: 'http://tu222.iqiqu.xyz/',
-    server: 'http://tu222.iqiqu.xyz/',
-    m2022: 'http://bili2.iqiqu.xyz/',
-    k0910k: 'http://bili2.iqiqu.xyz/',
-  }
   async getImgList(chapterUrl: string): Promise<string[]> {
     const {origin} = new URL(this.bookUrl)
     const reqUrl = isHasHost(chapterUrl) ? chapterUrl : `${origin}${chapterUrl}`
@@ -106,12 +96,29 @@ export class Ikuku extends Base {
     if (!nextImgUrlPath || !tempCurImgPath) return []
     const nextImgUrl = `${origin}${nextImgUrlPath}`
     const isEnd = nextImgUrlPath.includes('exit')
-    const imgHostMap = {...this.imgHostMap}
-    if (bodyStr.includes('js2/js4.js')) {
-      imgHostMap.m201304d = 'http://tu222.iqiqu.xyz/'
+    const imgHostMap = {} as {[key: string]: string}
+    const scriptReg = /<script language='javascript' src='(.*?)'><\/script>/g
+    const scriptMap = bodyStr.match(scriptReg)
+    let imgHostString = ''
+    if (Array.isArray(scriptMap)) {
+      for (const item of scriptMap) {
+        scriptReg.lastIndex = 0
+        const scriptUrl = scriptReg.exec(item)?.[1] ?? ''
+        if (!scriptUrl) continue
+        const response = await got.get(`${origin}${scriptUrl}`, this.genReqOptions())
+        imgHostString = imgHostString + '\n' + response.body
+      }
+      console.log('imgHostString ====> ', imgHostString)
     }
-    if (bodyStr.includes('js2/js5.js')) {
-      imgHostMap.m201304d = 'http://bili2.iqiqu.xyz/'
+    if (imgHostString) {
+      const matchArr = imgHostString.match(/\{(.*?)='(.*?)';\}/g)
+      console.log(matchArr)
+      matchArr?.forEach(item => {
+        const [, key, value] = /\{(.*?)='(.*?)';\}/.exec(item) || []
+        if (key && value) {
+          imgHostMap[key] = value
+        }
+      })
     }
 
     let curImgPath = tempCurImgPath
