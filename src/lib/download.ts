@@ -2,13 +2,16 @@ import { writeFileSync } from 'node:fs'
 import { readdir, stat, readFile } from 'node:fs/promises'
 import { join } from 'node:path'
 import pLimit from 'p-limit'
-import { notEmpty } from '@/utils'
+import { logger, notEmpty } from '@/utils'
 import { Base } from '@/lib/parse/base'
 import type { BookInfo } from '@/lib/parse/base'
 import { UserConfig } from '@/core'
 
 export async function writeBookInfoFile(bookInfo: BookInfo, bookDistPath: string, parseInstance: Base) {
-  const coverPicPath = await parseInstance.saveImg(bookDistPath, bookInfo.coverUrl, 'cover')
+  const coverPicPath = await parseInstance.saveImg(bookDistPath, bookInfo.coverUrl, 'cover').catch(e => {
+    logger.error('封面图下载失败', e.message)
+    return ''
+  })
   bookInfo.coverPath = coverPicPath
   writeFileSync(`${bookDistPath}/bookInfo.json`, JSON.stringify(bookInfo, null, 2))
 }
