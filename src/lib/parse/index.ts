@@ -7,7 +7,7 @@ import { Ikuku } from '@/lib/parse/ikuku'
 const ruleMap = [
   {
     /** 包子漫画 排除掉baozi.one 因为是godamanga的镜像站 */
-    hostRule: /(.*?)baozi(.*)\.(?!one)|(.*?)fzmanga(.*?)/,
+    hostRule: /(.*?)baozi(.*)\.(?!one)|(.*?)(fzmanga|webmota|kukuc|czmanga|dinnerku)(.*?)/,
     parse: {
       getInstance(url: string) {
         return new Baozi(url)

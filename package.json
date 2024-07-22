@@ -44,6 +44,7 @@
     "cli-progress": "3.12.0",
     "got": "11.8.6",
     "log4js": "^6.9.1",
+    "node-rsa": "^1.1.1",
     "p-limit": "^5.0.0",
     "patch-package": "^8.0.0",
     "protobufjs": "^7.2.5",
@@ -52,6 +53,7 @@
   },
   "devDependencies": {
     "@types/cli-progress": "^3.11.5",
+    "@types/node-rsa": "^1.1.4",
     "@typescript-eslint/eslint-plugin": "^6.15.0",
     "@typescript-eslint/parser": "^6.15.0",
     "concurrently": "^8.2.2",

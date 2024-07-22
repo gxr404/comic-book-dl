@@ -1,26 +1,28 @@
 # 支持的网站
 
 - [包子漫画](https://cn.baozimh.com/)-- [其他域名](https://cn.fzmanga.com)
-
-<!-- "cn.baozimh.com",
-"tw.baozimh.com",
-"www.baozimh.com",
-"cn.webmota.com",
-"tw.webmota.com",
-"www.webmota.com",
-"cn.kukuc.co",
-"tw.kukuc.co",
-"www.kukuc.co",
-"cn.czmanga.com",
-"tw.czmanga.com",
-"www.czmanga.com",
-"cn.dinnerku.com",
-"tw.dinnerku.com",
-"www.dinnerku.com", -->
+- 其他备用域名:
+  - "cn.baozimh.com"
+  - "tw.baozimh.com"
+  - "www.baozimh.com"
+  - "cn.webmota.com"
+  - "tw.webmota.com"
+  - "www.webmota.com"
+  - "cn.kukuc.co"
+  - "tw.kukuc.co"
+  - "www.kukuc.co"
+  - "cn.czmanga.com"
+  - "tw.czmanga.com"
+  - "www.czmanga.com"
+  - "cn.dinnerku.com"
+  - "tw.dinnerku.com"
+  - "www.dinnerku.com"
 
   ```bash
   comic-book-dl "https://cn.baozimh.com/comic/mengoushia-feiniaocheng"
   ```
+
+> ⚠️ cloudflare 403报错, 改用其他域名试试
 
 - 动漫之家([mobile](https://m.idmzj.com/)/[pc](https://cn.baozimh.com/))
 

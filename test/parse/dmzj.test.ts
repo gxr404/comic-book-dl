@@ -17,7 +17,8 @@ describe('parseBookInfo', () => {
     expect.soft(bookInfo.chapters.length).toBeGreaterThan(0)
   })
   test('parseBookInfo正常解析: pc site', async () => {
-    const dmzj = new Dmzj('https://www.idmzj.com/info/qishishiyimeizuijinchuxiandeyilididiguoyuqinmile.html')
+    // const dmzj = new Dmzj('https://www.idmzj.com/info/qishishiyimeizuijinchuxiandeyilididiguoyuqinmile.html')
+    const dmzj = new Dmzj('https://www.idmzj.com/info/yaoshenji.html')
     const _bookInfo = await dmzj.parseBookInfo()
     expect.soft(_bookInfo).not.toBeFalsy()
     const bookInfo = _bookInfo as BookInfo
