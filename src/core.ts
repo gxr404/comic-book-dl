@@ -114,7 +114,11 @@ export async function run(config: Config, hooks: RunHooks) {
     chaptersList = chaptersList.filter((chaptersItem) => {
       return !progressBar.progressInfo.some(item => {
         try {
-          const isSameHref =  new URL(item.href).pathname === new URL(chaptersItem.href).pathname
+          let isSameHref = item.href === chaptersItem.href
+          const isUrlReg = /(http|https):\/\//
+          if (!isSameHref && isUrlReg.test(item.href) && isUrlReg.test(chaptersItem.href)) {
+            isSameHref = new URL(item.href).pathname === new URL(chaptersItem.href).pathname
+          }
           const isSameName = item.rawName == chaptersItem.rawName
           if (isSameHref && isSameName) {
             chaptersItem.imageList = item.imageList
