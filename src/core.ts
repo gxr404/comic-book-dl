@@ -113,14 +113,18 @@ export async function run(config: Config, hooks: RunHooks) {
     // 并过滤出 chaptersList中未下载的
     chaptersList = chaptersList.filter((chaptersItem) => {
       return !progressBar.progressInfo.some(item => {
-        const isSameHref = item.href === chaptersItem.href
-        const isSameName = item.rawName == chaptersItem.rawName
-        if (isSameHref && isSameName) {
-          chaptersItem.imageList = item.imageList
-          chaptersItem.imageListPath = item.imageListPath
-          updateProgressInfo.push(item)
+        try {
+          const isSameHref =  new URL(item.href).pathname === new URL(chaptersItem.href).pathname
+          const isSameName = item.rawName == chaptersItem.rawName
+          if (isSameHref && isSameName) {
+            chaptersItem.imageList = item.imageList
+            chaptersItem.imageListPath = item.imageListPath
+            updateProgressInfo.push(item)
+          }
+          return isSameHref && isSameName
+        } catch(e) {
+          return false
         }
-        return isSameHref && isSameName
       })
     })
     // ! 漫画更新 url一致 但对应的内容由于更新变化了 重新更新符合的progressInfo
