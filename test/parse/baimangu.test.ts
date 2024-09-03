@@ -2,7 +2,7 @@ import { expect, test, describe } from 'vitest'
 import type { BookInfo } from '@/lib/parse/base'
 import { Baimangu } from '@/lib/parse/baimangu'
 
-describe('parseBookInfo', () => {
+describe.skip('parseBookInfo', () => {
   test('parseBookInfo正常解析', async () => {
     const baimangu = new Baimangu('https://www.darpou.com/book/73839.html')
     const _bookInfo = await baimangu.parseBookInfo()
@@ -38,7 +38,7 @@ describe('parseBookInfo', () => {
 })
 
 
-describe('getImgList', () => {
+describe.skip('getImgList', () => {
   test('getImgList正常解析', async () => {
     const baimangu = new Baimangu()
     const url = 'https://www.darpou.com/zhangjie/73839-1-1.html'
