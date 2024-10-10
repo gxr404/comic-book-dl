@@ -48,7 +48,9 @@ export class Godamanga extends Base {
     let chaptersList = [] as any
     let chaptersHrefPrefix = ''
     try {
-      const chaptersAPI = `https://api-get.mgsearcher.com/api/manga/get?mid=${mid}&mode=all`
+      // 2024-10-10接口变更
+      // const chaptersAPI = `https://api-get.mgsearcher.com/api/manga/get?mid=${mid}&mode=all`
+      const chaptersAPI = `https://api-get-v2.mgsearcher.com/api/manga/get?mid=${mid}&mode=all`
       const response = await got.get(chaptersAPI, this.genReqOptions())
       const data = JSON.parse(response.body)
       if (data.status && Array.isArray(data?.data?.chapters)) {
@@ -56,6 +58,7 @@ export class Godamanga extends Base {
         chaptersHrefPrefix = `/manga/${data?.data?.slug}`
       }
     } catch (e) {
+      // console.log(e)
       return false
     }
 
@@ -118,11 +121,16 @@ export class Godamanga extends Base {
     const cid = domInfo.data('cs')
     let imgList: string[] = []
     try {
-      const chaptersAPI = `https://api-get.mgsearcher.com/api/chapter/getinfo?m=${mid}&c=${cid}`
+      // 2024-10-10接口变更
+      // const chaptersAPI = `https://api-get.mgsearcher.com/api/chapter/getinfo?m=${mid}&c=${cid}`
+      const chaptersAPI = `https://api-get-v2.mgsearcher.com/api/chapter/getinfo?m=${mid}&c=${cid}`
       const response = await got.get(chaptersAPI, this.genReqOptions())
       const data = JSON.parse(response.body)
-      if (data?.status && Array.isArray(data?.data?.info?.images)) {
-        imgList = data?.data?.info?.images.map((item: any) => item?.url || '')
+      if (data?.status && Array.isArray(data?.data?.info?.images?.images)) {
+        imgList = data?.data?.info?.images?.images.map((item: any) => {
+          const imgHost = data?.data?.info?.images?.line === 2 ? 'https://f40-1-4.g-mh.online' : 'https://t40-1-4.g-mh.online'
+          return `${imgHost}${item?.url}` || ''
+        })
       }
     } catch (e) {
       console.log(e)
@@ -166,6 +174,7 @@ export class Godamanga extends Base {
         'user-agent': UA,
         referer: 'https://m.baozimh.one/'
       },
+      http2: true
     }
   }
 }
