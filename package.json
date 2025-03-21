@@ -38,30 +38,30 @@
     "sort-package-json": "npx sort-package-json"
   },
   "dependencies": {
-    "@inquirer/prompts": "^3.3.0",
+    "@inquirer/prompts": "^7.4.0",
     "cac": "^6.7.14",
-    "cheerio": "^1.0.0-rc.12",
+    "cheerio": "^1.0.0",
     "cli-progress": "3.12.0",
-    "got": "11.8.6",
+    "got": "^14.4.6",
     "log4js": "^6.9.1",
     "node-rsa": "^1.1.1",
-    "p-limit": "^5.0.0",
+    "p-limit": "^6.2.0",
     "patch-package": "^8.0.0",
-    "protobufjs": "^7.2.5",
-    "rand-user-agent": "^1.0.109",
-    "rimraf": "^5.0.5"
+    "protobufjs": "^7.4.0",
+    "rand-user-agent": "2.0.81",
+    "rimraf": "^6.0.1"
   },
   "devDependencies": {
-    "@types/cli-progress": "^3.11.5",
+    "@types/cli-progress": "^3.11.6",
     "@types/node-rsa": "^1.1.4",
-    "@typescript-eslint/eslint-plugin": "^6.15.0",
-    "@typescript-eslint/parser": "^6.15.0",
-    "concurrently": "^8.2.2",
-    "np": "^9.2.0",
+    "@typescript-eslint/eslint-plugin": "^8.27.0",
+    "@typescript-eslint/parser": "^8.27.0",
+    "concurrently": "^9.1.2",
+    "np": "^10.2.0",
     "npm-run-all": "^4.1.5",
-    "tsc-alias": "^1.8.8",
-    "typescript": "^5.3.3",
-    "vitest": "^1.5.3"
+    "tsc-alias": "^1.8.11",
+    "typescript": "^5.8.2",
+    "vitest": "^3.0.9"
   },
   "engines": {
     "node": ">=16.14.0"

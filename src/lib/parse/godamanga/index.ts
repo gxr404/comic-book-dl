@@ -51,8 +51,14 @@ export class Godamanga extends Base {
       // 2024-10-10接口变更
       // const chaptersAPI = `https://api-get.mgsearcher.com/api/manga/get?mid=${mid}&mode=all`
       const chaptersAPI = `https://api-get-v2.mgsearcher.com/api/manga/get?mid=${mid}&mode=all`
-      const response = await got.get(chaptersAPI, this.genReqOptions())
-      const data = JSON.parse(response.body)
+      const response = await fetch(chaptersAPI, {
+        headers: this.genReqOptions().headers,
+        method: 'GET'
+      })
+      const bodyText = await response.text()
+      const data = JSON.parse(bodyText)
+      // const response = await got.get(chaptersAPI, this.genReqOptions())
+      // const data = JSON.parse(response.body)
       if (data.status && Array.isArray(data?.data?.chapters)) {
         chaptersList = data?.data?.chapters
         chaptersHrefPrefix = `/manga/${data?.data?.slug}`
@@ -124,8 +130,14 @@ export class Godamanga extends Base {
       // 2024-10-10接口变更
       // const chaptersAPI = `https://api-get.mgsearcher.com/api/chapter/getinfo?m=${mid}&c=${cid}`
       const chaptersAPI = `https://api-get-v2.mgsearcher.com/api/chapter/getinfo?m=${mid}&c=${cid}`
-      const response = await got.get(chaptersAPI, this.genReqOptions())
-      const data = JSON.parse(response.body)
+      // const response = await got.get(chaptersAPI, this.genReqOptions())
+      // const data = JSON.parse(response.body)
+      const response = await fetch(chaptersAPI, {
+        headers: this.genReqOptions().headers,
+        method: 'GET'
+      })
+      const bodyText = await response.text()
+      const data = JSON.parse(bodyText)
       if (data?.status && Array.isArray(data?.data?.info?.images?.images)) {
         imgList = data?.data?.info?.images?.images.map((item: any) => {
           const imgHost = data?.data?.info?.images?.line === 2 ? 'https://f40-1-4.g-mh.online' : 'https://t40-1-4.g-mh.online'
